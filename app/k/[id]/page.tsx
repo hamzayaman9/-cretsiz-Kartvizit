@@ -4,6 +4,7 @@ import { CardData } from '@/lib/types'
 import CardPreview from '@/components/CardPreview'
 import QRCode from 'react-qr-code'
 import Footer from '@/components/Footer'
+import LogoText from '@/components/LogoText'
 
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null)
@@ -62,7 +63,9 @@ export default function CardPage() {
               <path d="M7 10V13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
             </svg>
           </div>
-          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartvizitim</span>
+          <span style={{ display: 'inline-block' }}>
+            <LogoText size={16} />
+          </span>
         </a>
         {isOwner && (
           <a href={`/duzenle/${cardId}`} className="btn-primary" style={{ fontSize: 13, padding: '9px 18px', textDecoration: 'none', display: 'inline-block' }}>

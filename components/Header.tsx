@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import LogoText from './LogoText'
 
 interface Props {
   onAuthClick: () => void
@@ -47,7 +48,7 @@ export default function Header({ onAuthClick }: Props) {
           </svg>
         </div>
         <div>
-          <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartvizitim</p>
+          <LogoText size={18} />
           <p style={{ margin: 0, fontSize: 10, color: 'var(--muted)', letterSpacing: '0.05em' }}>PROFESYONEL DİJİTAL KARTVİZİT</p>
         </div>
       </a>

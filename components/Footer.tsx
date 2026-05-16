@@ -1,4 +1,5 @@
 'use client'
+import LogoText from './LogoText'
 
 export default function Footer() {
   return (
@@ -23,7 +24,7 @@ export default function Footer() {
               </svg>
             </div>
             <div>
-              <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#fff', fontFamily: 'var(--font-display)' }}>Kartvizitim</p>
+              <LogoText size={16} color="#fff" iColor="#3b82f6" />
               <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>Profesyonel dijital kartvizit</p>
             </div>
           </div>

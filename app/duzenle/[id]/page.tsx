@@ -8,6 +8,7 @@ import TemplatePicker from '@/components/TemplatePicker'
 import PhotoUpload from '@/components/PhotoUpload'
 import StepIndicator from '@/components/StepIndicator'
 import Footer from '@/components/Footer'
+import LogoText from '@/components/LogoText'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -70,7 +71,9 @@ export default function EditPage() {
               <path d="M7 10V13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
             </svg>
           </div>
-          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartvizitim</span>
+          <span style={{ display: 'inline-block' }}>
+            <LogoText size={16} />
+          </span>
         </a>
         <a href={`/k/${cardId}`} style={{ fontSize: 13, color: 'var(--muted)', textDecoration: 'none' }}>← Kartı görüntüle</a>
       </header>
