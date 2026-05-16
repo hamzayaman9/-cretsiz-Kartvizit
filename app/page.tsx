@@ -9,7 +9,6 @@ import PhotoUpload from '@/components/PhotoUpload'
 import StepIndicator from '@/components/StepIndicator'
 import AuthModal from '@/components/AuthModal'
 import Footer from '@/components/Footer'
-import QRCode from 'react-qr-code'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -21,7 +20,6 @@ export default function BuilderPage() {
   const [copied, setCopied] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
   const [user, setUser] = useState<{ email: string; userId: string } | null>(null)
-  const [showQR, setShowQR] = useState(false)
 
   const shareUrl = savedId ? `${typeof window !== 'undefined' ? window.location.origin : ''}/k/${savedId}` : ''
 
@@ -55,9 +53,7 @@ export default function BuilderPage() {
       const json = await res.json()
       if (json.id) {
         setSavedId(json.id)
-        setTimeout(() => {
-          window.location.href = `/k/${json.id}`
-        }, 1500)
+        setTimeout(() => { window.location.href = `/k/${json.id}` }, 1500)
       }
     } catch {
       alert('Bir hata oluştu.')
@@ -82,7 +78,7 @@ export default function BuilderPage() {
       case 1: return <FieldSelector fields={data.fields} onChange={updateField} />
       case 2: return <ValuesForm values={data.values} fields={data.fields} onChange={updateValue} />
       case 3: return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <PhotoUpload label="Profil fotoğrafı" value={data.profilFoto} onChange={v => setData(d => ({ ...d, profilFoto: v }))} hint="Yuvarlak görünür" />
           <PhotoUpload label="Arka plan fotoğrafı" value={data.arkaplanFoto} onChange={v => setData(d => ({ ...d, arkaplanFoto: v }))} hint="Kapak & Gece şablonlarında görünür" />
         </div>
@@ -101,34 +97,46 @@ export default function BuilderPage() {
       )}
 
       {/* Header */}
-      <header style={{ borderBottom: '1px solid #f3f4f6', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, background: '#111', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <header style={{ borderBottom: '1px solid #f3f4f6', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 36, height: 36, background: '#111', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
               <rect x="1" y="1" width="12" height="9" rx="2" stroke="white" strokeWidth="1.2"/>
               <path d="M4 13H10" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
               <path d="M7 10V13" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
             </svg>
           </div>
-          <span style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>Kartvizitim</span>
-          <span style={{ fontSize: 11, background: '#f3f4f6', padding: '2px 8px', borderRadius: 20, color: '#6b7280' }}>Ücretsiz</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: '#111' }}>Kartvizitim</span>
+          <span style={{ fontSize: 12, background: '#f3f4f6', padding: '3px 10px', borderRadius: 20, color: '#6b7280' }}>Ücretsiz</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {user ? (
             <>
-              <a href="/panel" style={{ fontSize: 13, color: '#111', textDecoration: 'none', padding: '7px 14px', border: '1px solid #e5e7eb', borderRadius: 8 }}>
+              <a href="/panel" style={{
+                fontSize: 14, fontWeight: 500, color: '#111', textDecoration: 'none',
+                padding: '9px 18px', border: '1.5px solid #e5e7eb', borderRadius: 10,
+              }}>
                 Kartlarım
               </a>
-              <button onClick={handleLogout} style={{ fontSize: 13, color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+              <button onClick={handleLogout} style={{
+                fontSize: 14, color: '#6b7280', background: 'none', border: 'none',
+                cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: '9px 14px',
+              }}>
                 Çıkış
               </button>
             </>
           ) : (
             <button
               onClick={() => setShowAuth(true)}
-              style={{ fontSize: 13, fontWeight: 500, color: '#111', background: 'none', border: '1px solid #e5e7eb', borderRadius: 8, padding: '7px 14px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+              style={{
+                fontSize: 14, fontWeight: 600, color: '#fff',
+                background: '#111', border: 'none',
+                borderRadius: 10, padding: '10px 22px',
+                cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}
             >
-              Giriş / Kayıt
+              Giriş / Kayıt Ol
             </button>
           )}
         </div>
@@ -138,20 +146,20 @@ export default function BuilderPage() {
       <StepIndicator current={step} onChange={(s) => setStep(s as Step)} />
 
       {/* Main */}
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', flex: 1 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', flex: 1 }}>
         {/* Sol panel */}
-        <div style={{ borderRight: '1px solid #f3f4f6', padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ borderRight: '1px solid #f3f4f6', padding: '28px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
           {stepContent()}
 
-          {/* Next/Prev buttons */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 16 }}>
+          {/* Nav buttons */}
+          <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 20 }}>
             {step > 1 && (
               <button
                 onClick={() => setStep((step - 1) as Step)}
                 style={{
-                  flex: 1, padding: '10px', fontSize: 13, fontWeight: 500,
+                  flex: 1, padding: '12px', fontSize: 14, fontWeight: 500,
                   background: '#fff', color: '#111',
-                  border: '1px solid #e5e7eb', borderRadius: 8, cursor: 'pointer',
+                  border: '1.5px solid #e5e7eb', borderRadius: 10, cursor: 'pointer',
                   fontFamily: "'DM Sans', sans-serif",
                 }}
               >
@@ -162,9 +170,9 @@ export default function BuilderPage() {
               <button
                 onClick={() => setStep((step + 1) as Step)}
                 style={{
-                  flex: 1, padding: '10px', fontSize: 13, fontWeight: 500,
+                  flex: 1, padding: '12px', fontSize: 14, fontWeight: 600,
                   background: '#111', color: '#fff',
-                  border: 'none', borderRadius: 8, cursor: 'pointer',
+                  border: 'none', borderRadius: 10, cursor: 'pointer',
                   fontFamily: "'DM Sans', sans-serif",
                 }}
               >
@@ -175,10 +183,10 @@ export default function BuilderPage() {
                 onClick={handleSave}
                 disabled={saving || !data.values.isim}
                 style={{
-                  flex: 1, padding: '10px', fontSize: 13, fontWeight: 500,
+                  flex: 1, padding: '12px', fontSize: 14, fontWeight: 600,
                   background: data.values.isim ? '#111' : '#e5e7eb',
                   color: data.values.isim ? '#fff' : '#9ca3af',
-                  border: 'none', borderRadius: 8,
+                  border: 'none', borderRadius: 10,
                   cursor: data.values.isim ? 'pointer' : 'not-allowed',
                   fontFamily: "'DM Sans', sans-serif",
                 }}
@@ -188,11 +196,14 @@ export default function BuilderPage() {
             )}
           </div>
 
-          {/* Login prompt */}
           {!user && step === 4 && (
-            <p style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center', margin: 0 }}>
+            <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: 0 }}>
               Kartını kaydetmek için{' '}
-              <button onClick={() => setShowAuth(true)} style={{ background: 'none', border: 'none', color: '#111', fontWeight: 500, cursor: 'pointer', fontSize: 11, fontFamily: "'DM Sans', sans-serif", textDecoration: 'underline' }}>
+              <button onClick={() => setShowAuth(true)} style={{
+                background: 'none', border: 'none', color: '#111', fontWeight: 600,
+                cursor: 'pointer', fontSize: 12, fontFamily: "'DM Sans', sans-serif",
+                textDecoration: 'underline',
+              }}>
                 giriş yap
               </button>
             </p>
@@ -200,21 +211,32 @@ export default function BuilderPage() {
         </div>
 
         {/* Sağ panel */}
-        <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: 24, background: '#fafafa' }}>
-          <div style={{ maxWidth: 560 }}>
-            <p style={{ margin: '0 0 12px', fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 28, background: '#fafafa' }}>
+          <div style={{ maxWidth: 600 }}>
+            <p style={{ margin: '0 0 14px', fontSize: 12, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
               Canlı önizleme
             </p>
             <CardPreview data={data} />
           </div>
 
           {savedId && (
-            <div style={{ maxWidth: 560, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
-              <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 500, color: '#111' }}>✅ Kartvizitın hazır!</p>
-              <p style={{ margin: '0 0 12px', fontSize: 12, color: '#9ca3af' }}>Yönlendiriliyorsun...</p>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input readOnly value={shareUrl} style={{ flex: 1, padding: '9px 12px', fontSize: 12, border: '1px solid #e5e7eb', borderRadius: 8, background: '#f9fafb', color: '#374151', fontFamily: "'DM Sans', sans-serif" }} />
-                <button onClick={handleCopy} style={{ padding: '9px 14px', fontSize: 13, background: copied ? '#f0fdf4' : '#111', color: copied ? '#166534' : '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+            <div style={{ maxWidth: 600, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: '24px 28px' }}>
+              <p style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 600, color: '#111' }}>✅ Kartvizitın hazır!</p>
+              <p style={{ margin: '0 0 14px', fontSize: 13, color: '#9ca3af' }}>Yönlendiriliyorsun...</p>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <input readOnly value={shareUrl} style={{
+                  flex: 1, padding: '10px 14px', fontSize: 13,
+                  border: '1px solid #e5e7eb', borderRadius: 10,
+                  background: '#f9fafb', color: '#374151',
+                  fontFamily: "'DM Sans', sans-serif",
+                }} />
+                <button onClick={handleCopy} style={{
+                  padding: '10px 18px', fontSize: 13, fontWeight: 500,
+                  background: copied ? '#f0fdf4' : '#111',
+                  color: copied ? '#166534' : '#fff',
+                  border: 'none', borderRadius: 10, cursor: 'pointer',
+                  fontFamily: "'DM Sans', sans-serif",
+                }}>
                   {copied ? '✓' : 'Kopyala'}
                 </button>
               </div>
