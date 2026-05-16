@@ -14,10 +14,9 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false)
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 12px', fontSize: 13,
-    border: '1px solid #e5e7eb', borderRadius: 8,
-    fontFamily: "'DM Sans', sans-serif", color: '#111',
-    outline: 'none',
+    width: '100%', padding: '12px 14px', fontSize: 14,
+    border: '1.5px solid var(--border)', borderRadius: 10,
+    color: 'var(--ink)', outline: 'none', transition: 'border-color 0.15s',
   }
 
   const handleSubmit = async () => {
@@ -42,75 +41,67 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+      position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.5)',
+      backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 1000, fontFamily: "'DM Sans', sans-serif",
-    }}>
+      zIndex: 1000, padding: 16,
+    }} className="fade-in">
       <div style={{
-        background: '#fff', borderRadius: 16, padding: '32px',
-        width: '100%', maxWidth: 380, margin: '0 16px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        background: '#fff', borderRadius: 20, padding: '36px',
+        width: '100%', maxWidth: 420,
+        boxShadow: '0 30px 80px rgba(15, 23, 42, 0.25)',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#111' }}>
-            {mode === 'register' ? 'Hesap oluştur' : 'Giriş yap'}
-          </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#9ca3af' }}>×</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+          <div style={{
+            width: 48, height: 48,
+            background: 'linear-gradient(135deg, var(--brand-50), var(--brand-100))',
+            borderRadius: 14,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 22,
+          }}>
+            {mode === 'register' ? '✨' : '👋'}
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, color: 'var(--muted)', padding: 0, lineHeight: 1 }}>×</button>
         </div>
 
-        <p style={{ margin: '0 0 20px', fontSize: 13, color: '#6b7280' }}>
+        <h2 style={{ margin: '20px 0 6px', fontSize: 22, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
+          {mode === 'register' ? 'Hesap oluştur' : 'Tekrar hoş geldin'}
+        </h2>
+        <p style={{ margin: '0 0 24px', fontSize: 14, color: 'var(--muted)' }}>
           {mode === 'register'
             ? 'Kartlarını kaydet, istediğin zaman düzenle.'
-            : 'Hesabına giriş yap, kartlarını gör.'}
+            : 'Hesabına giriş yap, kartlarını yönet.'}
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div>
-            <label style={{ fontSize: 11, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>E-posta</label>
-            <input
-              type="email" value={email} placeholder="ornek@email.com"
-              onChange={e => setEmail(e.target.value)}
-              style={inputStyle}
-              onFocus={e => (e.target.style.borderColor = '#111')}
-              onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
-            />
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-soft)', display: 'block', marginBottom: 6 }}>E-posta</label>
+            <input type="email" value={email} placeholder="ornek@email.com" onChange={e => setEmail(e.target.value)} style={inputStyle}
+              onFocus={e => (e.target.style.borderColor = 'var(--brand-500)')}
+              onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
           </div>
           <div>
-            <label style={{ fontSize: 11, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Şifre</label>
-            <input
-              type="password" value={password} placeholder="En az 6 karakter"
-              onChange={e => setPassword(e.target.value)}
-              style={inputStyle}
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-soft)', display: 'block', marginBottom: 6 }}>Şifre</label>
+            <input type="password" value={password} placeholder="En az 6 karakter" onChange={e => setPassword(e.target.value)} style={inputStyle}
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-              onFocus={e => (e.target.style.borderColor = '#111')}
-              onBlur={e => (e.target.style.borderColor = '#e5e7eb')}
-            />
+              onFocus={e => (e.target.style.borderColor = 'var(--brand-500)')}
+              onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
           </div>
         </div>
 
-        {error && <p style={{ margin: '12px 0 0', fontSize: 12, color: '#ef4444' }}>{error}</p>}
+        {error && (
+          <div style={{ marginTop: 14, padding: '10px 14px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10 }}>
+            <p style={{ margin: 0, fontSize: 13, color: '#dc2626' }}>{error}</p>
+          </div>
+        )}
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          style={{
-            width: '100%', marginTop: 16, padding: '12px',
-            background: '#111', color: '#fff', border: 'none',
-            borderRadius: 10, fontSize: 14, fontWeight: 500,
-            cursor: loading ? 'not-allowed' : 'pointer',
-            fontFamily: "'DM Sans', sans-serif",
-            opacity: loading ? 0.7 : 1,
-          }}
-        >
+        <button onClick={handleSubmit} disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: 20, padding: '14px', fontSize: 15, opacity: loading ? 0.7 : 1 }}>
           {loading ? 'Bekle...' : mode === 'register' ? 'Hesap oluştur' : 'Giriş yap'}
         </button>
 
-        <p style={{ margin: '16px 0 0', fontSize: 12, color: '#9ca3af', textAlign: 'center' }}>
+        <p style={{ margin: '20px 0 0', fontSize: 13, color: 'var(--muted)', textAlign: 'center' }}>
           {mode === 'register' ? 'Zaten hesabın var mı? ' : 'Hesabın yok mu? '}
-          <button
-            onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setError('') }}
-            style={{ background: 'none', border: 'none', color: '#111', fontWeight: 500, cursor: 'pointer', fontSize: 12, fontFamily: "'DM Sans', sans-serif" }}
-          >
+          <button onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setError('') }} style={{ background: 'none', border: 'none', color: 'var(--brand-700)', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}>
             {mode === 'register' ? 'Giriş yap' : 'Kayıt ol'}
           </button>
         </p>

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { CardData, defaultCardData, TemplateId } from '@/lib/types'
 import FieldSelector from '@/components/FieldSelector'
 import ValuesForm from '@/components/ValuesForm'
@@ -9,26 +9,26 @@ import PhotoUpload from '@/components/PhotoUpload'
 import StepIndicator from '@/components/StepIndicator'
 import AuthModal from '@/components/AuthModal'
 import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import Hero from '@/components/Hero'
+import Features from '@/components/Features'
 
 type Step = 1 | 2 | 3 | 4
 
-export default function BuilderPage() {
+export default function HomePage() {
   const [data, setData] = useState<CardData>(defaultCardData)
   const [step, setStep] = useState<Step>(1)
   const [saving, setSaving] = useState(false)
   const [savedId, setSavedId] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
-  const [user, setUser] = useState<{ email: string; userId: string } | null>(null)
+  const builderRef = useRef<HTMLDivElement>(null)
 
   const shareUrl = savedId ? `${typeof window !== 'undefined' ? window.location.origin : ''}/k/${savedId}` : ''
 
-  useEffect(() => {
-    fetch('/api/auth/me')
-      .then(r => r.json())
-      .then(d => { if (d.user) setUser(d.user) })
-      .catch(() => {})
-  }, [])
+  const scrollToBuilder = () => {
+    builderRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   const updateField = useCallback((key: keyof CardData['fields'], value: boolean) => {
     setData(d => ({ ...d, fields: { ...d.fields, [key]: value } }))
@@ -62,11 +62,6 @@ export default function BuilderPage() {
     }
   }
 
-  const handleLogout = async () => {
-    await fetch('/api/auth/me', { method: 'DELETE' })
-    setUser(null)
-  }
-
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl)
     setCopied(true)
@@ -88,162 +83,98 @@ export default function BuilderPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
       {showAuth && (
-        <AuthModal
-          onClose={() => setShowAuth(false)}
-          onSuccess={(email) => { setUser({ email, userId: '' }); setShowAuth(false) }}
-        />
+        <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => { setShowAuth(false); window.location.reload() }} />
       )}
 
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid #f3f4f6', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 36, height: 36, background: '#111', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
-              <rect x="1" y="1" width="12" height="9" rx="2" stroke="white" strokeWidth="1.2"/>
-              <path d="M4 13H10" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
-              <path d="M7 10V13" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <span style={{ fontSize: 18, fontWeight: 700, color: '#111' }}>Kartvizitim</span>
-          <span style={{ fontSize: 12, background: '#f3f4f6', padding: '3px 10px', borderRadius: 20, color: '#6b7280' }}>Ücretsiz</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {user ? (
-            <>
-              <a href="/panel" style={{
-                fontSize: 14, fontWeight: 500, color: '#111', textDecoration: 'none',
-                padding: '9px 18px', border: '1.5px solid #e5e7eb', borderRadius: 10,
-              }}>
-                Kartlarım
-              </a>
-              <button onClick={handleLogout} style={{
-                fontSize: 14, color: '#6b7280', background: 'none', border: 'none',
-                cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: '9px 14px',
-              }}>
-                Çıkış
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setShowAuth(true)}
-              style={{
-                fontSize: 14, fontWeight: 600, color: '#fff',
-                background: '#111', border: 'none',
-                borderRadius: 10, padding: '10px 22px',
-                cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              }}
-            >
-              Giriş / Kayıt Ol
-            </button>
-          )}
-        </div>
-      </header>
+      <Header onAuthClick={() => setShowAuth(true)} />
+      <Hero onStart={scrollToBuilder} />
+      <Features />
 
-      {/* Step Indicator */}
-      <StepIndicator current={step} onChange={(s) => setStep(s as Step)} />
-
-      {/* Main */}
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', flex: 1 }}>
-        {/* Sol panel */}
-        <div style={{ borderRight: '1px solid #f3f4f6', padding: '28px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {stepContent()}
-
-          {/* Nav buttons */}
-          <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 20 }}>
-            {step > 1 && (
-              <button
-                onClick={() => setStep((step - 1) as Step)}
-                style={{
-                  flex: 1, padding: '12px', fontSize: 14, fontWeight: 500,
-                  background: '#fff', color: '#111',
-                  border: '1.5px solid #e5e7eb', borderRadius: 10, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif",
-                }}
-              >
-                ← Geri
-              </button>
-            )}
-            {step < 4 ? (
-              <button
-                onClick={() => setStep((step + 1) as Step)}
-                style={{
-                  flex: 1, padding: '12px', fontSize: 14, fontWeight: 600,
-                  background: '#111', color: '#fff',
-                  border: 'none', borderRadius: 10, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif",
-                }}
-              >
-                İleri →
-              </button>
-            ) : (
-              <button
-                onClick={handleSave}
-                disabled={saving || !data.values.isim}
-                style={{
-                  flex: 1, padding: '12px', fontSize: 14, fontWeight: 600,
-                  background: data.values.isim ? '#111' : '#e5e7eb',
-                  color: data.values.isim ? '#fff' : '#9ca3af',
-                  border: 'none', borderRadius: 10,
-                  cursor: data.values.isim ? 'pointer' : 'not-allowed',
-                  fontFamily: "'DM Sans', sans-serif",
-                }}
-              >
-                {saving ? 'Oluşturuluyor...' : '🔗 Kartı oluştur'}
-              </button>
-            )}
-          </div>
-
-          {!user && step === 4 && (
-            <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: 0 }}>
-              Kartını kaydetmek için{' '}
-              <button onClick={() => setShowAuth(true)} style={{
-                background: 'none', border: 'none', color: '#111', fontWeight: 600,
-                cursor: 'pointer', fontSize: 12, fontFamily: "'DM Sans', sans-serif",
-                textDecoration: 'underline',
-              }}>
-                giriş yap
-              </button>
+      {/* Builder section */}
+      <section ref={builderRef} style={{ background: 'var(--surface)', padding: '80px 0 60px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 700, color: 'var(--brand-600)', letterSpacing: '0.1em' }}>
+              KARTVİZİT OLUŞTURUCU
             </p>
-          )}
-        </div>
-
-        {/* Sağ panel */}
-        <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 28, background: '#fafafa' }}>
-          <div style={{ maxWidth: 600 }}>
-            <p style={{ margin: '0 0 14px', fontSize: 12, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-              Canlı önizleme
+            <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
+              Hadi kartını oluşturalım
+            </h2>
+            <p style={{ margin: '12px 0 0', fontSize: 16, color: 'var(--muted)' }}>
+              4 basit adım — sonunda paylaşılabilir bir link
             </p>
-            <CardPreview data={data} />
           </div>
 
-          {savedId && (
-            <div style={{ maxWidth: 600, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: '24px 28px' }}>
-              <p style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 600, color: '#111' }}>✅ Kartvizitın hazır!</p>
-              <p style={{ margin: '0 0 14px', fontSize: 13, color: '#9ca3af' }}>Yönlendiriliyorsun...</p>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <input readOnly value={shareUrl} style={{
-                  flex: 1, padding: '10px 14px', fontSize: 13,
-                  border: '1px solid #e5e7eb', borderRadius: 10,
-                  background: '#f9fafb', color: '#374151',
-                  fontFamily: "'DM Sans', sans-serif",
-                }} />
-                <button onClick={handleCopy} style={{
-                  padding: '10px 18px', fontSize: 13, fontWeight: 500,
-                  background: copied ? '#f0fdf4' : '#111',
-                  color: copied ? '#166534' : '#fff',
-                  border: 'none', borderRadius: 10, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif",
-                }}>
-                  {copied ? '✓' : 'Kopyala'}
-                </button>
+          <div style={{
+            background: '#fff',
+            borderRadius: 24,
+            boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--border)',
+            overflow: 'hidden',
+          }}>
+            <StepIndicator current={step} onChange={(s) => setStep(s as Step)} />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr' }}>
+              {/* Sol panel */}
+              <div style={{ borderRight: '1px solid var(--border)', padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: 540 }}>
+                {stepContent()}
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 20 }}>
+                  {step > 1 && (
+                    <button onClick={() => setStep((step - 1) as Step)} className="btn-secondary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>
+                      ← Geri
+                    </button>
+                  )}
+                  {step < 4 ? (
+                    <button onClick={() => setStep((step + 1) as Step)} className="btn-primary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>
+                      İleri →
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleSave}
+                      disabled={saving || !data.values.isim}
+                      className={data.values.isim ? 'btn-primary' : ''}
+                      style={{
+                        flex: 1, padding: '13px', fontSize: 14, fontWeight: 600,
+                        background: data.values.isim ? undefined : '#e2e8f0',
+                        color: data.values.isim ? '#fff' : '#94a3b8',
+                        border: 'none', borderRadius: 12,
+                        cursor: data.values.isim ? 'pointer' : 'not-allowed',
+                      }}
+                    >
+                      {saving ? 'Oluşturuluyor...' : '🔗 Kartı oluştur'}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Sağ panel */}
+              <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--surface)' }}>
+                <div>
+                  <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    Canlı önizleme
+                  </p>
+                  <CardPreview data={data} />
+                </div>
+
+                {savedId && (
+                  <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px' }}>
+                    <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>✅ Kartvizitın hazır!</p>
+                    <p style={{ margin: '0 0 12px', fontSize: 12, color: 'var(--muted)' }}>Yönlendiriliyorsun...</p>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input readOnly value={shareUrl} style={{ flex: 1, padding: '9px 12px', fontSize: 12, border: '1px solid var(--border)', borderRadius: 10, background: 'var(--surface)', color: 'var(--ink-soft)' }} />
+                      <button onClick={handleCopy} className="btn-primary" style={{ padding: '9px 16px', fontSize: 12 }}>
+                        {copied ? '✓' : 'Kopyala'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      </section>
 
       <Footer />
     </div>

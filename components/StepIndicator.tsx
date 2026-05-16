@@ -14,8 +14,8 @@ interface Props {
 
 export default function StepIndicator({ current, onChange }: Props) {
   return (
-    <div style={{ padding: '24px 32px 0', background: '#fff', borderBottom: '1px solid #f3f4f6' }}>
-      <div style={{ display: 'flex', alignItems: 'center', maxWidth: 640 }}>
+    <div style={{ padding: '28px 32px 8px', background: '#fff', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', maxWidth: 720 }}>
         {steps.map((s, i) => {
           const done = current > s.num
           const active = current === s.num
@@ -24,43 +24,39 @@ export default function StepIndicator({ current, onChange }: Props) {
               <button
                 onClick={() => onChange(s.num)}
                 style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
                   background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 20px',
-                  minWidth: 80,
+                  minWidth: 88,
                 }}
               >
                 <div style={{
-                  width: 40, height: 40, borderRadius: '50%',
-                  background: done ? '#111' : active ? '#111' : '#f3f4f6',
-                  color: done || active ? '#fff' : '#9ca3af',
+                  width: 44, height: 44, borderRadius: '50%',
+                  background: done || active ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : 'var(--surface)',
+                  color: done || active ? '#fff' : 'var(--muted)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 15, fontWeight: 700,
-                  transition: 'all 0.2s',
+                  fontSize: 16, fontWeight: 700,
+                  transition: 'all 0.3s',
                   flexShrink: 0,
-                  boxShadow: active ? '0 2px 12px rgba(0,0,0,0.2)' : 'none',
+                  boxShadow: active ? '0 6px 20px rgba(37, 99, 235, 0.35)' : 'none',
+                  border: !done && !active ? '1.5px solid var(--border)' : 'none',
+                  fontFamily: 'var(--font-display)',
                 }}>
                   {done ? (
-                    <svg width="16" height="13" viewBox="0 0 16 13" fill="none">
-                      <path d="M1 6.5L6 11.5L15 1.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg width="18" height="14" viewBox="0 0 16 13" fill="none">
+                      <path d="M1 6.5L6 11.5L15 1.5" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   ) : s.num}
                 </div>
                 <span style={{
-                  fontSize: 13, fontWeight: active ? 700 : 400,
-                  color: active ? '#111' : done ? '#6b7280' : '#9ca3af',
+                  fontSize: 13, fontWeight: active ? 600 : 500,
+                  color: active ? 'var(--brand-700)' : done ? 'var(--ink-soft)' : 'var(--muted)',
                   whiteSpace: 'nowrap',
-                  fontFamily: "'DM Sans', sans-serif",
                 }}>
                   {s.label}
                 </span>
               </button>
               {i < steps.length - 1 && (
-                <div style={{
-                  flex: 1, height: 2, marginBottom: 28,
-                  background: done ? '#111' : '#e5e7eb',
-                  transition: 'background 0.3s',
-                  marginLeft: 4, marginRight: 4,
-                }} />
+                <div style={{ flex: 1, height: 2, marginBottom: 30, background: done ? 'var(--brand-600)' : 'var(--border)', transition: 'background 0.3s', marginLeft: 6, marginRight: 6 }} />
               )}
             </div>
           )

@@ -23,46 +23,20 @@ export default function EditPage() {
     const segments = window.location.pathname.split('/')
     const id = segments[segments.length - 1]
     setCardId(id)
-
-    fetch(`/api/card?id=${id}`)
-      .then(r => r.json())
-      .then(d => {
-        if (!d.error) setData(d)
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
+    fetch(`/api/card?id=${id}`).then(r => r.json()).then(d => { if (!d.error) setData(d); setLoading(false) }).catch(() => setLoading(false))
   }, [])
 
-  const updateField = useCallback((key: keyof CardData['fields'], value: boolean) => {
-    setData(d => ({ ...d, fields: { ...d.fields, [key]: value } }))
-  }, [])
-
-  const updateValue = useCallback((key: keyof CardData['values'], value: string) => {
-    setData(d => ({ ...d, values: { ...d.values, [key]: value } }))
-  }, [])
-
-  const setTemplate = useCallback((t: TemplateId) => {
-    setData(d => ({ ...d, template: t }))
-  }, [])
+  const updateField = useCallback((key: keyof CardData['fields'], value: boolean) => setData(d => ({ ...d, fields: { ...d.fields, [key]: value } })), [])
+  const updateValue = useCallback((key: keyof CardData['values'], value: string) => setData(d => ({ ...d, values: { ...d.values, [key]: value } })), [])
+  const setTemplate = useCallback((t: TemplateId) => setData(d => ({ ...d, template: t })), [])
 
   const handleSave = async () => {
     setSaving(true)
     try {
-      const res = await fetch('/api/card', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, id: cardId }),
-      })
+      const res = await fetch('/api/card', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, id: cardId }) })
       const json = await res.json()
-      if (json.success) {
-        setSaved(true)
-        setTimeout(() => { window.location.href = `/k/${cardId}` }, 1200)
-      }
-    } catch {
-      alert('Bir hata oluştu.')
-    } finally {
-      setSaving(false)
-    }
+      if (json.success) { setSaved(true); setTimeout(() => { window.location.href = `/k/${cardId}` }, 1200) }
+    } catch { alert('Bir hata oluştu.') } finally { setSaving(false) }
   }
 
   const stepContent = () => {
@@ -80,57 +54,57 @@ export default function EditPage() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans', sans-serif" }}>
-      <p style={{ fontSize: 13, color: '#9ca3af' }}>Yükleniyor...</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface)' }}>
+      <p style={{ fontSize: 14, color: 'var(--muted)' }}>Yükleniyor...</p>
     </div>
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
-      <header style={{ borderBottom: '1px solid #f3f4f6', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 36, height: 36, background: '#111', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
-                <rect x="1" y="1" width="12" height="9" rx="2" stroke="white" strokeWidth="1.2"/>
-                <path d="M4 13H10" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
-                <path d="M7 10V13" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <span style={{ fontSize: 18, fontWeight: 700, color: '#111' }}>Kartvizitim</span>
-          </a>
-        </div>
-        <a href={`/k/${cardId}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>← Kartı görüntüle</a>
+    <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
+      <header style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
+              <rect x="1" y="1" width="12" height="9" rx="2" stroke="white" strokeWidth="1.4"/>
+              <path d="M4 13H10" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+              <path d="M7 10V13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartvizitim</span>
+        </a>
+        <a href={`/k/${cardId}`} style={{ fontSize: 13, color: 'var(--muted)', textDecoration: 'none' }}>← Kartı görüntüle</a>
       </header>
 
-      <StepIndicator current={step} onChange={(s) => setStep(s as Step)} />
-
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', flex: 1 }}>
-        <div style={{ borderRight: '1px solid #f3f4f6', padding: '28px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {stepContent()}
-
-          <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 20 }}>
-            {step > 1 && (
-              <button onClick={() => setStep((step - 1) as Step)} style={{ flex: 1, padding: '12px', fontSize: 14, fontWeight: 500, background: '#fff', color: '#111', border: '1.5px solid #e5e7eb', borderRadius: 10, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                ← Geri
-              </button>
-            )}
-            {step < 4 ? (
-              <button onClick={() => setStep((step + 1) as Step)} style={{ flex: 1, padding: '12px', fontSize: 14, fontWeight: 600, background: '#111', color: '#fff', border: 'none', borderRadius: 10, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                İleri →
-              </button>
-            ) : (
-              <button onClick={handleSave} disabled={saving} style={{ flex: 1, padding: '12px', fontSize: 14, fontWeight: 600, background: '#111', color: '#fff', border: 'none', borderRadius: 10, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                {saving ? 'Kaydediliyor...' : saved ? '✓ Kaydedildi!' : '💾 Kaydet'}
-              </button>
-            )}
-          </div>
+      <div style={{ flex: 1, padding: '32px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+        <div style={{ marginBottom: 24 }}>
+          <p style={{ margin: '0 0 6px', fontSize: 12, fontWeight: 700, color: 'var(--brand-600)', letterSpacing: '0.1em' }}>DÜZENLEME</p>
+          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartını güncelle</h1>
         </div>
 
-        <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 28, background: '#fafafa' }}>
-          <div style={{ maxWidth: 600 }}>
-            <p style={{ margin: '0 0 14px', fontSize: 12, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Canlı önizleme</p>
-            <CardPreview data={data} />
+        <div style={{ background: '#fff', borderRadius: 20, boxShadow: '0 10px 30px rgba(15, 23, 42, 0.06), 0 0 0 1px var(--border)', overflow: 'hidden' }}>
+          <StepIndicator current={step} onChange={(s) => setStep(s as Step)} />
+          <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr' }}>
+            <div style={{ borderRight: '1px solid var(--border)', padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: 540 }}>
+              {stepContent()}
+              <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 20 }}>
+                {step > 1 && (
+                  <button onClick={() => setStep((step - 1) as Step)} className="btn-secondary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>← Geri</button>
+                )}
+                {step < 4 ? (
+                  <button onClick={() => setStep((step + 1) as Step)} className="btn-primary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>İleri →</button>
+                ) : (
+                  <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>
+                    {saving ? 'Kaydediliyor...' : saved ? '✓ Kaydedildi!' : '💾 Kaydet'}
+                  </button>
+                )}
+              </div>
+            </div>
+            <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--surface)' }}>
+              <div>
+                <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Canlı önizleme</p>
+                <CardPreview data={data} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
