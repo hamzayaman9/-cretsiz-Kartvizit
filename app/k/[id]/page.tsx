@@ -1,10 +1,11 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, use } from 'react'
 import { CardData } from '@/lib/types'
 import CardPreview from '@/components/CardPreview'
 import QRCode from 'react-qr-code'
 
-export default function CardPage({ params }: { params: { id: string } }) {
+export default function CardPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [card, setCard] = useState<CardData | null>(null)
   const [error, setError] = useState(false)
   const [showQR, setShowQR] = useState(false)
@@ -12,14 +13,14 @@ export default function CardPage({ params }: { params: { id: string } }) {
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
   useEffect(() => {
-    fetch(`/api/card?id=${params.id}`)
+    fetch(`/api/card?id=${id}`)
       .then(r => r.json())
       .then(d => {
         if (d.error) setError(true)
         else setCard(d)
       })
       .catch(() => setError(true))
-  }, [params.id])
+  }, [id])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(url)
@@ -49,7 +50,6 @@ export default function CardPage({ params }: { params: { id: string } }) {
       <div style={{ width: '100%', maxWidth: 480 }}>
         <CardPreview data={card} />
 
-        {/* Aksiyonlar */}
         <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
           <button
             onClick={handleCopy}
