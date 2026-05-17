@@ -38,9 +38,10 @@ export default function Footer() {
           <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
             © {new Date().getFullYear()} Tüm hakları <strong style={{ color: 'rgba(255,255,255,0.9)' }}>Hamza Yaman</strong>'a aittir.
           </p>
-          <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-            ❤️ ile yapıldı
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <a href="/kvkk" style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>KVKK</a>
+            <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>❤️ ile yapıldı</p>
+          </div>
         </div>
       </div>
     </footer>
