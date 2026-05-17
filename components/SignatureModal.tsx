@@ -64,9 +64,11 @@ export default function SignatureModal({ html, onClose }: Props) {
   const copyRich = () => {
     const el = document.createElement('div')
     el.setAttribute('contenteditable', 'true')
+    el.setAttribute('tabindex', '-1')
     el.innerHTML = html
     el.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;'
     document.body.appendChild(el)
+    el.focus()
     const range = document.createRange()
     range.selectNodeContents(el)
     const sel = window.getSelection()
@@ -77,6 +79,27 @@ export default function SignatureModal({ html, onClose }: Props) {
     sel?.removeAllRanges()
     setSelected(true)
     setTimeout(() => setSelected(false), 2000)
+  }
+
+  const openInWindow = () => {
+    const win = window.open('', '_blank', 'width=720,height=480,menubar=no,toolbar=no,scrollbars=yes')
+    if (!win) return
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>E-posta İmzası</title>
+<style>
+  body { margin: 0; padding: 32px; font-family: Arial, sans-serif; background: #f8fafc; }
+  .box { background: #fff; border-radius: 12px; padding: 28px; border: 1px solid #e2e8f0; }
+  .tip { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #1e40af; line-height: 1.6; }
+  kbd { background: #1e40af; color: #fff; border-radius: 4px; padding: 2px 7px; font-size: 12px; font-family: inherit; }
+</style>
+</head><body>
+<div class="tip">
+  <strong>1.</strong> <kbd>Ctrl+A</kbd> (Mac: <kbd>Cmd+A</kbd>) ile tümünü seç &nbsp;→&nbsp;
+  <strong>2.</strong> <kbd>Ctrl+C</kbd> ile kopyala &nbsp;→&nbsp;
+  <strong>3.</strong> Gmail imza kutusuna <kbd>Ctrl+V</kbd> ile yapıştır
+</div>
+<div class="box">${html}</div>
+</body></html>`)
+    win.document.close()
   }
 
   return (
@@ -114,13 +137,16 @@ export default function SignatureModal({ html, onClose }: Props) {
                 <p style={{ margin: '0 0 10px', fontSize: 11, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Önizleme</p>
                 <div ref={previewRef} dangerouslySetInnerHTML={{ __html: html }} style={{ cursor: 'text' }} />
               </div>
-              <div style={{ background: '#eff6ff', borderRadius: 10, padding: '12px 16px', border: '1px solid #bfdbfe', fontSize: 13, color: '#1e3a8a', lineHeight: 1.6 }}>
-                <strong>Nasıl eklenir?</strong><br />
-                Aşağıdaki butona tıkla → Gmail / Outlook imza kutusuna <strong>Ctrl+V</strong> ile yapıştır. Direkt zengin metin olarak yapışır.
+              <div style={{ background: '#eff6ff', borderRadius: 10, padding: '12px 16px', border: '1px solid #bfdbfe', fontSize: 13, color: '#1e3a8a', lineHeight: 1.7 }}>
+                <strong>En kolay yol:</strong> Aşağıdaki butona tıkla → açılan pencerede <strong>Ctrl+A</strong> sonra <strong>Ctrl+C</strong> → Gmail imza kutusuna <strong>Ctrl+V</strong>
               </div>
+              <button onClick={openInWindow}
+                style={{ padding: '13px', fontSize: 14, fontWeight: 600, background: '#2563eb', color: '#fff', border: 'none', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit' }}>
+                🖥️ İmzayı Yeni Pencerede Aç
+              </button>
               <button onClick={copyRich}
-                style={{ padding: '13px', fontSize: 14, fontWeight: 600, background: selected ? '#16a34a' : '#2563eb', color: '#fff', border: 'none', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.2s' }}>
-                {selected ? '✓ Kopyalandı! Şimdi Ctrl+V ile yapıştır' : '📋 İmzayı Kopyala (Gmail / Outlook)'}
+                style={{ padding: '11px', fontSize: 13, fontWeight: 500, background: selected ? '#16a34a' : '#fff', color: selected ? '#fff' : 'var(--ink)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.2s' }}>
+                {selected ? '✓ Kopyalandı! Ctrl+V ile yapıştır' : '📋 Direkt Kopyala (deneysel)'}
               </button>
             </div>
           )}
