@@ -1,6 +1,6 @@
 'use client'
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { CardData, defaultCardData, TemplateId } from '@/lib/types'
+import { CardData, CardStyle, defaultCardData, TemplateId } from '@/lib/types'
 import FieldSelector from '@/components/FieldSelector'
 import ValuesForm from '@/components/ValuesForm'
 import CardPreview from '@/components/CardPreview'
@@ -42,6 +42,7 @@ export default function HomePage() {
   const updateValue = useCallback((key: keyof CardData['values'], value: string) => setData(d => ({ ...d, values: { ...d.values, [key]: value } })), [])
   const setTemplate = useCallback((t: TemplateId) => setData(d => ({ ...d, template: t })), [])
   const setAccentColor = useCallback((c: string) => setData(d => ({ ...d, accentColor: c })), [])
+  const setCardStyle = useCallback((s: CardStyle) => setData(d => ({ ...d, cardStyle: s })), [])
 
   const handleCreate = async () => {
     setSaving(true)
@@ -115,7 +116,7 @@ export default function HomePage() {
           <PhotoUpload label="Arka plan fotoğrafı" value={data.arkaplanFoto} onChange={v => setData(d => ({ ...d, arkaplanFoto: v }))} hint="Kapak & Gece şablonlarında görünür" />
         </div>
       )
-      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} accentColor={data.accentColor} onColorChange={setAccentColor} />
+      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} accentColor={data.accentColor} onColorChange={setAccentColor} cardStyle={data.cardStyle} onStyleChange={setCardStyle} />
     }
   }
 

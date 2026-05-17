@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { CardData, TemplateId } from '@/lib/types'
+import { CardData, CardStyle, TemplateId } from '@/lib/types'
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin'
 import { verifyToken } from '@/lib/auth'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
@@ -7,7 +7,28 @@ import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 const VALID_TEMPLATES: TemplateId[] = [
   'klasik', 'kapak', 'bolunmus', 'gece', 'yanpanel',
   'minimal', 'kurumsal', 'cembersel', 'sicakkart', 'mozaik', 'bateman',
+  'gradient', 'neon', 'retro', 'cam', 'bold', 'ikirenk', 'serbest',
 ]
+
+const VALID_FONT_FAMILIES = ['sans', 'serif', 'mono']
+const VALID_BORDER_RADIUS = ['none', 'small', 'medium', 'large']
+const VALID_FONT_SIZES = ['small', 'medium', 'large']
+const VALID_LAYOUTS = ['left', 'center', 'split']
+
+function sanitizeCardStyle(style: any): CardStyle {
+  if (!style || typeof style !== 'object') return {}
+  const out: CardStyle = {}
+  if (VALID_FONT_FAMILIES.includes(style.fontFamily)) out.fontFamily = style.fontFamily
+  if (VALID_BORDER_RADIUS.includes(style.borderRadius)) out.borderRadius = style.borderRadius
+  if (VALID_FONT_SIZES.includes(style.fontSize)) out.fontSize = style.fontSize
+  if (VALID_LAYOUTS.includes(style.layout)) out.layout = style.layout
+  if (isSafeColor(style.bgColor)) out.bgColor = style.bgColor
+  if (isSafeColor(style.textColor)) out.textColor = style.textColor
+  if (typeof style.bgGradient === 'string' && style.bgGradient.length < 200 && /^linear-gradient\(/.test(style.bgGradient)) {
+    out.bgGradient = style.bgGradient
+  }
+  return out
+}
 
 function sanitize(str: string, max = 500): string {
   return String(str || '').slice(0, max).trim()
@@ -63,6 +84,7 @@ function sanitizeCard(data: any): CardData | null {
     profilFoto: isSafeImageUrl(data.profilFoto) ? data.profilFoto : null,
     arkaplanFoto: isSafeImageUrl(data.arkaplanFoto) ? data.arkaplanFoto : null,
     accentColor: isSafeColor(data.accentColor) ? data.accentColor : '',
+    cardStyle: sanitizeCardStyle(data.cardStyle),
   }
   return clean
 }

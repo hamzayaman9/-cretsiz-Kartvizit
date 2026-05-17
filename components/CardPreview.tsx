@@ -3,7 +3,8 @@ import { CardData } from '@/lib/types'
 import {
   KlasikTemplate, KapakTemplate, BolunmusTemplate, GeceTemplate, YanpanelTemplate,
   MinimalTemplate, KurumsalTemplate, CembersalTemplate, SicakKartTemplate, MozaikTemplate,
-  BatemanTemplate,
+  BatemanTemplate, GradientTemplate, NeonTemplate, RetroTemplate, CamTemplate,
+  BoldTemplate, IkiRenkTemplate, SerbstTemplate,
 } from './templates'
 
 export default function CardPreview({ data }: { data: CardData }) {
@@ -19,6 +20,13 @@ export default function CardPreview({ data }: { data: CardData }) {
     case 'sicakkart': return <SicakKartTemplate data={data} />
     case 'mozaik':    return <MozaikTemplate data={data} />
     case 'bateman':   return <BatemanTemplate data={data} />
+    case 'gradient':  return <GradientTemplate data={data} />
+    case 'neon':      return <NeonTemplate data={data} />
+    case 'retro':     return <RetroTemplate data={data} />
+    case 'cam':       return <CamTemplate data={data} />
+    case 'bold':      return <BoldTemplate data={data} />
+    case 'ikirenk':   return <IkiRenkTemplate data={data} />
+    case 'serbest':   return <SerbstTemplate data={data} />
     default:          return <KlasikTemplate data={data} />
   }
 }

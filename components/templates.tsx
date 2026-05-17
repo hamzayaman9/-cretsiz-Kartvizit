@@ -1,5 +1,5 @@
 'use client'
-import { CardData } from '@/lib/types'
+import { CardData, CardStyle } from '@/lib/types'
 
 function Avatar({ src, initials, size = 48, rounded = true }: {
   src: string | null, initials: string, size?: number, rounded?: boolean
@@ -425,6 +425,220 @@ export function MozaikTemplate({ data }: { data: CardData }) {
           {data.fields.twitter && v.twitter && <a href={socialUrl('twitter', v.twitter)} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Twitter</a>}
         </div>
       ) : null}
+    </div>
+  )
+}
+
+// ── GRADİENT ──────────────────────────────────────────────
+export function GradientTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const accent = data.accentColor || '#2563eb'
+  return (
+    <div style={{ background: `linear-gradient(135deg, ${accent} 0%, ${accent}99 100%)`, borderRadius: 20, padding: '36px 32px', fontFamily: "'DM Sans', sans-serif", minHeight: 220, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        {data.fields.profil && <Avatar src={data.profilFoto} initials={initials(v.isim)} size={56} />}
+        {data.fields.sirket && v.sirket && (
+          <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>{v.sirket}</p>
+        )}
+      </div>
+      <div>
+        {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 26, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>{v.isim}</p>}
+        {data.fields.unvan && v.unvan && <p style={{ margin: '6px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>{v.unvan}</p>}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+        {data.fields.telefon && v.telefon && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>📞 {v.telefon}</span>}
+        {data.fields.eposta && v.eposta && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>✉️ {v.eposta}</span>}
+        {data.fields.website && v.website && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>🌐 {v.website}</span>}
+      </div>
+    </div>
+  )
+}
+
+// ── NEON ──────────────────────────────────────────────────
+export function NeonTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const accent = data.accentColor || '#a855f7'
+  const glow = `0 0 10px ${accent}, 0 0 30px ${accent}55`
+  return (
+    <div style={{ background: '#080808', borderRadius: 16, padding: '32px 28px', fontFamily: "'DM Sans', sans-serif", minHeight: 220, border: `1px solid ${accent}44`, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+        {data.fields.profil && <Avatar src={data.profilFoto} initials={initials(v.isim)} size={52} />}
+        <div>
+          {data.fields.isim && v.isim && (
+            <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: accent, textShadow: glow, letterSpacing: '0.02em' }}>{v.isim}</p>
+          )}
+          {data.fields.unvan && v.unvan && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#888', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{v.unvan}</p>}
+          {data.fields.sirket && v.sirket && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#555' }}>{v.sirket}</p>}
+        </div>
+      </div>
+      <div style={{ borderTop: `1px solid ${accent}33`, paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 12, color: '#aaa', textDecoration: 'none' }}>📞 {v.telefon}</a>}
+        {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 12, color: '#aaa', textDecoration: 'none' }}>✉️ {v.eposta}</a>}
+        {data.fields.adres && v.adres && <span style={{ fontSize: 12, color: '#aaa' }}>📍 {v.adres}</span>}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+        {data.fields.linkedin && v.linkedin && <a href={socialUrl('linkedin', v.linkedin)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, padding: '3px 10px', border: `1px solid ${accent}55`, borderRadius: 20, color: accent, textDecoration: 'none' }}>LinkedIn</a>}
+        {data.fields.github && v.github && <a href={socialUrl('github', v.github)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, padding: '3px 10px', border: `1px solid ${accent}55`, borderRadius: 20, color: accent, textDecoration: 'none' }}>GitHub</a>}
+        {data.fields.instagram && v.instagram && <a href={socialUrl('instagram', v.instagram)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, padding: '3px 10px', border: `1px solid ${accent}55`, borderRadius: 20, color: accent, textDecoration: 'none' }}>Instagram</a>}
+      </div>
+    </div>
+  )
+}
+
+// ── RETRO ─────────────────────────────────────────────────
+export function RetroTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const accent = data.accentColor || '#92400e'
+  return (
+    <div style={{ background: '#fdf6e3', borderRadius: 4, padding: '28px 32px', fontFamily: "'Georgia', serif", minHeight: 220, border: '2px solid #d4a373', position: 'relative', boxShadow: '4px 4px 0 #d4a373' }}>
+      <div style={{ position: 'absolute', top: 6, left: 6, right: 6, bottom: 6, border: '1px solid #d4a37388', borderRadius: 2, pointerEvents: 'none' }} />
+      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+        {data.fields.sirket && v.sirket && (
+          <p style={{ margin: 0, fontSize: 10, color: accent, letterSpacing: '0.4em', textTransform: 'uppercase', fontWeight: 700 }}>{v.sirket}</p>
+        )}
+        <div style={{ height: 1, background: accent, margin: '10px 0', opacity: 0.3 }} />
+      </div>
+      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+        {data.fields.profil && <div style={{ marginBottom: 12 }}><Avatar src={data.profilFoto} initials={initials(v.isim)} size={56} /></div>}
+        {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 20, fontWeight: 700, color: accent, letterSpacing: '0.1em' }}>{v.isim}</p>}
+        {data.fields.unvan && v.unvan && <p style={{ margin: '4px 0 0', fontSize: 11, color: accent, fontStyle: 'italic', opacity: 0.8 }}>{v.unvan}</p>}
+      </div>
+      <div style={{ height: 1, background: accent, opacity: 0.3, marginBottom: 12 }} />
+      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {data.fields.telefon && v.telefon && <span style={{ fontSize: 11, color: accent, opacity: 0.85 }}>{v.telefon}</span>}
+        {data.fields.eposta && v.eposta && <span style={{ fontSize: 11, color: accent, opacity: 0.85 }}>{v.eposta}</span>}
+        {data.fields.adres && v.adres && <span style={{ fontSize: 10, color: accent, opacity: 0.7 }}>{v.adres}</span>}
+      </div>
+    </div>
+  )
+}
+
+// ── CAM (GLASS) ───────────────────────────────────────────
+export function CamTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const accent = data.accentColor || '#2563eb'
+  return (
+    <div style={{ background: `linear-gradient(135deg, ${accent}dd 0%, ${accent}88 100%)`, borderRadius: 20, padding: '32px 28px', fontFamily: "'DM Sans', sans-serif", minHeight: 220, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -60, right: -60, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+      <div style={{ position: 'absolute', bottom: -40, left: -40, width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+      <div style={{ position: 'relative', zIndex: 1, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: 14, padding: '24px', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {data.fields.profil && <Avatar src={data.profilFoto} initials={initials(v.isim)} size={52} />}
+          <div>
+            {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#fff' }}>{v.isim}</p>}
+            {data.fields.unvan && v.unvan && <p style={{ margin: '3px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.8)' }}>{v.unvan}</p>}
+            {data.fields.sirket && v.sirket && <p style={{ margin: '2px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>{v.sirket}</p>}
+          </div>
+        </div>
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }}>📞 {v.telefon}</a>}
+          {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }}>✉️ {v.eposta}</a>}
+          {data.fields.adres && v.adres && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>📍 {v.adres}</span>}
+        </div>
+        <SocialRow data={data} />
+      </div>
+    </div>
+  )
+}
+
+// ── BOLD ──────────────────────────────────────────────────
+export function BoldTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const accent = data.accentColor || '#111827'
+  return (
+    <div style={{ background: '#fff', borderRadius: 16, padding: '32px 28px', fontFamily: "'DM Sans', sans-serif", minHeight: 220, border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        {data.fields.isim && v.isim && (
+          <p style={{ margin: 0, fontSize: 34, fontWeight: 800, color: accent, letterSpacing: '-0.03em', lineHeight: 1, wordBreak: 'break-word' }}>{v.isim}</p>
+        )}
+        {data.fields.unvan && v.unvan && (
+          <p style={{ margin: '10px 0 0', fontSize: 13, fontWeight: 600, color: '#64748b', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{v.unvan}</p>
+        )}
+        {data.fields.sirket && v.sirket && (
+          <div style={{ marginTop: 8, display: 'inline-block', background: accent, color: '#fff', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 4 }}>{v.sirket}</div>
+        )}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, borderTop: '2px solid', borderColor: accent, paddingTop: 14 }}>
+        {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 13, color: '#374151', textDecoration: 'none', fontWeight: 500 }}>📞 {v.telefon}</a>}
+        {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 13, color: '#374151', textDecoration: 'none', fontWeight: 500 }}>✉️ {v.eposta}</a>}
+        {data.fields.adres && v.adres && <span style={{ fontSize: 12, color: '#6b7280' }}>📍 {v.adres}</span>}
+        <SocialRow data={data} />
+      </div>
+    </div>
+  )
+}
+
+// ── İKİ RENK ──────────────────────────────────────────────
+export function IkiRenkTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const accent = data.accentColor || '#2563eb'
+  return (
+    <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e5e7eb', display: 'flex', fontFamily: "'DM Sans', sans-serif", minHeight: 200 }}>
+      <div style={{ width: '45%', background: accent, padding: '28px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+        {data.fields.profil && <div style={{ marginBottom: 8 }}><Avatar src={data.profilFoto} initials={initials(v.isim)} size={52} /></div>}
+        {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>{v.isim}</p>}
+        {data.fields.unvan && v.unvan && <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.04em' }}>{v.unvan}</p>}
+        {data.fields.sirket && v.sirket && <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>{v.sirket}</p>}
+      </div>
+      <div style={{ flex: 1, background: '#fff', padding: '24px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 7 }}>
+        {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 12, color: '#374151', textDecoration: 'none' }}>📞 {v.telefon}</a>}
+        {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 12, color: '#374151', textDecoration: 'none' }}>✉️ {v.eposta}</a>}
+        {data.fields.adres && v.adres && <span style={{ fontSize: 11, color: '#6b7280' }}>📍 {v.adres}</span>}
+        {data.fields.website && v.website && <a href={socialUrl('website', v.website)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#6b7280', textDecoration: 'none' }}>🌐 {v.website}</a>}
+        <div style={{ marginTop: 4, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          {data.fields.linkedin && v.linkedin && <a href={socialUrl('linkedin', v.linkedin)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: accent, fontWeight: 600, textDecoration: 'none' }}>LinkedIn</a>}
+          {data.fields.github && v.github && <a href={socialUrl('github', v.github)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: accent, fontWeight: 600, textDecoration: 'none', marginLeft: 6 }}>GitHub</a>}
+          {data.fields.instagram && v.instagram && <a href={socialUrl('instagram', v.instagram)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: accent, fontWeight: 600, textDecoration: 'none', marginLeft: 6 }}>Instagram</a>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── SERBEST (AI üretimi) ───────────────────────────────────
+export function SerbstTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const s = data.cardStyle || {}
+  const accent = data.accentColor || '#2563eb'
+
+  const fontMap = { sans: "'DM Sans', sans-serif", serif: "'Georgia', serif", mono: "'Courier New', monospace" }
+  const radiusMap = { none: 0, small: 8, medium: 16, large: 24 }
+  const sizeMap = { small: 0.85, medium: 1, large: 1.15 }
+
+  const font = fontMap[s.fontFamily || 'sans']
+  const radius = radiusMap[s.borderRadius || 'medium']
+  const scale = sizeMap[s.fontSize || 'medium']
+  const bg = s.bgGradient || s.bgColor || '#fff'
+  const textColor = s.textColor || '#111827'
+  const isGradient = !!s.bgGradient || (!!s.bgColor && s.bgColor !== '#fff')
+  const isCentered = s.layout === 'center'
+
+  return (
+    <div style={{
+      background: bg,
+      borderRadius: radius,
+      padding: `${28 * scale}px ${32 * scale}px`,
+      fontFamily: font,
+      minHeight: 200,
+      border: isGradient ? 'none' : '1px solid #e5e7eb',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: isCentered ? 'center' : 'space-between',
+      alignItems: isCentered ? 'center' : 'flex-start',
+      textAlign: isCentered ? 'center' : 'left',
+    }}>
+      <div style={{ marginBottom: 16 }}>
+        {data.fields.profil && <div style={{ marginBottom: 12, display: 'flex', justifyContent: isCentered ? 'center' : 'flex-start' }}><Avatar src={data.profilFoto} initials={initials(v.isim)} size={56} /></div>}
+        {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 22 * scale, fontWeight: 700, color: textColor, lineHeight: 1.2 }}>{v.isim}</p>}
+        {data.fields.unvan && v.unvan && <p style={{ margin: `${4 * scale}px 0 0`, fontSize: 13 * scale, color: isGradient ? `${textColor}cc` : '#6b7280' }}>{v.unvan}</p>}
+        {data.fields.sirket && v.sirket && <p style={{ margin: `${2 * scale}px 0 0`, fontSize: 12 * scale, color: accent }}>{v.sirket}</p>}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 * scale, borderTop: `1px solid ${isGradient ? 'rgba(255,255,255,0.2)' : '#e5e7eb'}`, paddingTop: 12 * scale, width: '100%' }}>
+        {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 12 * scale, color: isGradient ? `${textColor}dd` : '#374151', textDecoration: 'none' }}>📞 {v.telefon}</a>}
+        {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 12 * scale, color: isGradient ? `${textColor}dd` : '#374151', textDecoration: 'none' }}>✉️ {v.eposta}</a>}
+        {data.fields.adres && v.adres && <span style={{ fontSize: 11 * scale, color: isGradient ? `${textColor}aa` : '#6b7280' }}>📍 {v.adres}</span>}
+      </div>
     </div>
   )
 }

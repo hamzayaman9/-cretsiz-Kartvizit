@@ -1,9 +1,26 @@
-export type TemplateId = 'klasik' | 'kapak' | 'bolunmus' | 'gece' | 'yanpanel' | 'minimal' | 'kurumsal' | 'cembersel' | 'sicakkart' | 'mozaik' | 'bateman'
+export type TemplateId =
+  | 'klasik' | 'kapak' | 'bolunmus' | 'gece' | 'yanpanel'
+  | 'minimal' | 'kurumsal' | 'cembersel' | 'sicakkart' | 'mozaik'
+  | 'bateman' | 'gradient' | 'neon' | 'retro' | 'cam' | 'bold' | 'ikirenk' | 'serbest'
+
+export type FontFamily = 'sans' | 'serif' | 'mono'
+export type BorderRadius = 'none' | 'small' | 'medium' | 'large'
+export type FontSize = 'small' | 'medium' | 'large'
+export type Layout = 'left' | 'center' | 'split'
+
+export interface CardStyle {
+  fontFamily?: FontFamily
+  bgColor?: string
+  bgGradient?: string
+  textColor?: string
+  borderRadius?: BorderRadius
+  fontSize?: FontSize
+  layout?: Layout
+}
 
 export interface CardData {
   id?: string
   template: TemplateId
-  // Kişisel
   fields: {
     isim: boolean
     unvan: boolean
@@ -36,6 +53,7 @@ export interface CardData {
   profilFoto: string | null
   arkaplanFoto: string | null
   accentColor?: string
+  cardStyle?: CardStyle
 }
 
 export const defaultCardData: CardData = {
@@ -72,4 +90,5 @@ export const defaultCardData: CardData = {
   profilFoto: null,
   arkaplanFoto: null,
   accentColor: '',
+  cardStyle: {},
 }

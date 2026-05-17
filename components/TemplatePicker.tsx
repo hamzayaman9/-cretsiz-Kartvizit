@@ -1,5 +1,5 @@
 'use client'
-import { TemplateId } from '@/lib/types'
+import { TemplateId, CardStyle, FontFamily, BorderRadius, FontSize } from '@/lib/types'
 
 const templates: { id: TemplateId; label: string; desc: string }[] = [
   { id: 'klasik',    label: 'Klasik',    desc: 'Beyaz, sola hizalı' },
@@ -13,6 +13,13 @@ const templates: { id: TemplateId; label: string; desc: string }[] = [
   { id: 'sicakkart', label: 'Sıcak',     desc: 'Turuncu tonlar, samimi' },
   { id: 'mozaik',    label: 'Mozaik',    desc: 'Bloklu modern grid' },
   { id: 'bateman',   label: 'Bateman',   desc: 'Krem kağıt, serif, klasik' },
+  { id: 'gradient',  label: 'Gradient',  desc: 'Tam gradient arka plan' },
+  { id: 'neon',      label: 'Neon',      desc: 'Koyu zemin, parlayan renk' },
+  { id: 'retro',     label: 'Retro',     desc: 'Vintage, çift çerçeve' },
+  { id: 'cam',       label: 'Cam',       desc: 'Glassmorphism efekti' },
+  { id: 'bold',      label: 'Bold',      desc: 'Büyük tipografi, minimal' },
+  { id: 'ikirenk',   label: 'İki Renk',  desc: 'Sol renkli, sağ beyaz' },
+  { id: 'serbest',   label: '✨ Serbest', desc: 'AI tarafından oluşturulur' },
 ]
 
 const PRESET_COLORS = [
@@ -31,9 +38,15 @@ interface Props {
   onChange: (id: TemplateId) => void
   accentColor?: string
   onColorChange?: (color: string) => void
+  cardStyle?: CardStyle
+  onStyleChange?: (style: CardStyle) => void
 }
 
-export default function TemplatePicker({ selected, onChange, accentColor = '', onColorChange }: Props) {
+export default function TemplatePicker({ selected, onChange, accentColor = '', onColorChange, cardStyle = {}, onStyleChange }: Props) {
+  const updateStyle = (patch: Partial<CardStyle>) => {
+    if (onStyleChange) onStyleChange({ ...cardStyle, ...patch })
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       {templates.map(t => (
@@ -110,6 +123,146 @@ export default function TemplatePicker({ selected, onChange, accentColor = '', o
                 Sıfırla
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {onStyleChange && (
+        <div style={{ marginTop: 4, padding: '14px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--ink-soft)' }}>Stil özelleştirme</p>
+
+          {/* Font */}
+          <div>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: 'var(--muted)' }}>Yazı tipi</p>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {([['sans', 'Modern'], ['serif', 'Klasik'], ['mono', 'Teknik']] as [FontFamily, string][]).map(([val, lbl]) => (
+                <button
+                  key={val}
+                  onClick={() => updateStyle({ fontFamily: val })}
+                  style={{
+                    flex: 1, padding: '7px 4px', fontSize: 11, fontWeight: 500,
+                    borderRadius: 8, cursor: 'pointer',
+                    border: `1.5px solid ${cardStyle.fontFamily === val ? '#2563eb' : 'var(--border)'}`,
+                    background: cardStyle.fontFamily === val ? 'var(--brand-50)' : '#fff',
+                    color: cardStyle.fontFamily === val ? 'var(--brand-700)' : 'var(--ink)',
+                    fontFamily: val === 'sans' ? 'sans-serif' : val === 'serif' ? 'Georgia, serif' : 'monospace',
+                  }}
+                >
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Font size */}
+          <div>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: 'var(--muted)' }}>Yazı boyutu</p>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {([['small', 'Küçük'], ['medium', 'Orta'], ['large', 'Büyük']] as [FontSize, string][]).map(([val, lbl]) => (
+                <button
+                  key={val}
+                  onClick={() => updateStyle({ fontSize: val })}
+                  style={{
+                    flex: 1, padding: '7px 4px', fontSize: 11, fontWeight: 500,
+                    borderRadius: 8, cursor: 'pointer',
+                    border: `1.5px solid ${cardStyle.fontSize === val ? '#2563eb' : 'var(--border)'}`,
+                    background: cardStyle.fontSize === val ? 'var(--brand-50)' : '#fff',
+                    color: cardStyle.fontSize === val ? 'var(--brand-700)' : 'var(--ink)',
+                  }}
+                >
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Border radius */}
+          <div>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: 'var(--muted)' }}>Köşe yuvarlığı</p>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {([['none', 'Keskin'], ['small', 'Az'], ['medium', 'Orta'], ['large', 'Yuvarlak']] as [BorderRadius, string][]).map(([val, lbl]) => (
+                <button
+                  key={val}
+                  onClick={() => updateStyle({ borderRadius: val })}
+                  style={{
+                    flex: 1, padding: '7px 2px', fontSize: 10, fontWeight: 500,
+                    borderRadius: val === 'none' ? 2 : val === 'small' ? 4 : val === 'medium' ? 8 : 16,
+                    cursor: 'pointer',
+                    border: `1.5px solid ${cardStyle.borderRadius === val ? '#2563eb' : 'var(--border)'}`,
+                    background: cardStyle.borderRadius === val ? 'var(--brand-50)' : '#fff',
+                    color: cardStyle.borderRadius === val ? 'var(--brand-700)' : 'var(--ink)',
+                  }}
+                >
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Layout */}
+          <div>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: 'var(--muted)' }}>Hizalama</p>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {([['left', 'Sol'], ['center', 'Orta'], ['split', 'Bölünmüş']] as [import('@/lib/types').Layout, string][]).map(([val, lbl]) => (
+                <button
+                  key={val}
+                  onClick={() => updateStyle({ layout: val })}
+                  style={{
+                    flex: 1, padding: '7px 4px', fontSize: 11, fontWeight: 500,
+                    borderRadius: 8, cursor: 'pointer',
+                    border: `1.5px solid ${cardStyle.layout === val ? '#2563eb' : 'var(--border)'}`,
+                    background: cardStyle.layout === val ? 'var(--brand-50)' : '#fff',
+                    color: cardStyle.layout === val ? 'var(--brand-700)' : 'var(--ink)',
+                  }}
+                >
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Background color */}
+          <div>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: 'var(--muted)' }}>Arka plan rengi</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input
+                type="color"
+                value={cardStyle.bgColor || '#ffffff'}
+                onChange={e => updateStyle({ bgColor: e.target.value })}
+                style={{ width: 32, height: 32, border: 'none', padding: 0, cursor: 'pointer', borderRadius: 6, background: 'none' }}
+              />
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>{cardStyle.bgColor || 'Şablona göre'}</span>
+              {cardStyle.bgColor && (
+                <button
+                  onClick={() => updateStyle({ bgColor: undefined })}
+                  style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+                >
+                  Sıfırla
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Text color */}
+          <div>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: 'var(--muted)' }}>Yazı rengi</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input
+                type="color"
+                value={cardStyle.textColor || '#111827'}
+                onChange={e => updateStyle({ textColor: e.target.value })}
+                style={{ width: 32, height: 32, border: 'none', padding: 0, cursor: 'pointer', borderRadius: 6, background: 'none' }}
+              />
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>{cardStyle.textColor || 'Şablona göre'}</span>
+              {cardStyle.textColor && (
+                <button
+                  onClick={() => updateStyle({ textColor: undefined })}
+                  style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+                >
+                  Sıfırla
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
