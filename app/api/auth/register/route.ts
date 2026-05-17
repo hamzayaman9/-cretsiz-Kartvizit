@@ -1,25 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { hashPassword, createToken } from '@/lib/auth'
+import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+function validatePassword(pw: string): string | null {
+  if (pw.length < 8) return 'Şifre en az 8 karakter olmalı'
+  if (!/[a-zA-Z]/.test(pw)) return 'Şifre en az bir harf içermeli'
+  if (!/[0-9]/.test(pw)) return 'Şifre en az bir rakam içermeli'
+  return null
+}
+
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 register / saat / IP
+    const key = `register:${getClientKey(req)}`
+    const limit = checkRateLimit(key, 5, 60 * 60 * 1000)
+    if (!limit.allowed) {
+      const mins = Math.ceil((limit.remainingMs || 0) / 60000)
+      return NextResponse.json({ error: `Çok fazla deneme, ${mins} dakika sonra dene` }, { status: 429 })
+    }
+
     const { email, password } = await req.json()
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email ve şifre gerekli' }, { status: 400 })
     }
 
-    if (password.length < 6) {
-      return NextResponse.json({ error: 'Şifre en az 6 karakter olmalı' }, { status: 400 })
+    if (!validateEmail(email)) {
+      return NextResponse.json({ error: 'Geçerli bir email gir' }, { status: 400 })
     }
 
-    // Check if user exists
+    const pwError = validatePassword(password)
+    if (pwError) {
+      return NextResponse.json({ error: pwError }, { status: 400 })
+    }
+
     const { data: existing } = await supabase
       .from('users')
       .select('id')

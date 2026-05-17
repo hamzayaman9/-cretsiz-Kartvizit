@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,21 +9,28 @@ const supabase = createClient(
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 20 upload / saat / IP
+    const key = `upload:${getClientKey(req)}`
+    const limit = checkRateLimit(key, 20, 60 * 60 * 1000)
+    if (!limit.allowed) {
+      const mins = Math.ceil((limit.remainingMs || 0) / 60000)
+      return NextResponse.json({ error: `Çok fazla yükleme, ${mins} dakika sonra dene` }, { status: 429 })
+    }
+
     const formData = await req.formData()
     const file = formData.get('file') as File | null
 
-    if (!file) {
-      return NextResponse.json({ error: 'Dosya gerekli' }, { status: 400 })
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'Dosya 5MB dan buyuk olamaz' }, { status: 400 })
-    }
+    if (!file) return NextResponse.json({ error: 'Dosya gerekli' }, { status: 400 })
+    if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: 'Dosya 5MB dan büyük olamaz' }, { status: 400 })
 
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
     const allowed = ['jpg', 'jpeg', 'png', 'webp']
-    if (!allowed.includes(ext)) {
-      return NextResponse.json({ error: 'Sadece jpg, png veya webp' }, { status: 400 })
+    if (!allowed.includes(ext)) return NextResponse.json({ error: 'Sadece jpg, png veya webp' }, { status: 400 })
+
+    // MIME type kontrolü (sadece uzantıya güvenmiyoruz)
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedMimes.includes(file.type)) {
+      return NextResponse.json({ error: 'Geçersiz dosya türü' }, { status: 400 })
     }
 
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
@@ -30,10 +38,7 @@ export async function POST(req: NextRequest) {
 
     const { error } = await supabase.storage
       .from('kartvizit-fotograflari')
-      .upload(filename, buffer, {
-        contentType: file.type,
-        upsert: false,
-      })
+      .upload(filename, buffer, { contentType: file.type, upsert: false })
 
     if (error) {
       console.error('Upload error:', error)
@@ -47,6 +52,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: publicUrl })
   } catch (err) {
     console.error('Upload exception:', err)
-    return NextResponse.json({ error: 'Sunucu hatasi' }, { status: 500 })
+    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
   }
 }
