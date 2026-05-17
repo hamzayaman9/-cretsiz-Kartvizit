@@ -53,14 +53,34 @@ fields'ta sadece doldurulan alanlar true olsun. values'ta boş alanlar "" olsun.
 
 export async function POST(req: NextRequest) {
   try {
-    const key = `asistan:${getClientKey(req)}`
-    const limit = checkRateLimit(key, 30, 60 * 60 * 1000)
-    if (!limit.allowed) {
-      return NextResponse.json({ error: 'Çok fazla istek' }, { status: 429 })
+    const clientKey = getClientKey(req)
+
+    // Dakika bazlı sıkı limit (burst koruması)
+    const burstLimit = checkRateLimit(`asistan:burst:${clientKey}`, 5, 60 * 1000)
+    if (!burstLimit.allowed) {
+      return NextResponse.json({ error: 'Çok hızlı istek gönderiyorsun, biraz bekle' }, { status: 429 })
     }
 
-    const { messages } = await req.json()
+    // Saatlik limit
+    const hourLimit = checkRateLimit(`asistan:hour:${clientKey}`, 20, 60 * 60 * 1000)
+    if (!hourLimit.allowed) {
+      return NextResponse.json({ error: 'Saatlik istek limitine ulaştın, 1 saat sonra dene' }, { status: 429 })
+    }
+
+    const body = await req.json()
+    const { messages } = body
+
     if (!Array.isArray(messages)) {
+      return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
+    }
+
+    // Mesaj sayısı ve içerik boyutu kontrolü
+    if (messages.length > 40) {
+      return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
+    }
+
+    const totalChars = messages.reduce((sum: number, m: any) => sum + String(m?.content || '').length, 0)
+    if (totalChars > 20000) {
       return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
     }
 
