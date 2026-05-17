@@ -58,6 +58,16 @@ export default function Header({ onAuthClick }: Props) {
       </a>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <a href="/asistan" className="desktop-only" style={{
+          fontSize: 13, fontWeight: 600,
+          color: '#7c3aed',
+          textDecoration: 'none', padding: '9px 14px',
+          border: '1.5px solid #e9d5ff', borderRadius: 10,
+          background: '#faf5ff', whiteSpace: 'nowrap',
+          display: 'flex', alignItems: 'center', gap: 6,
+        }}>
+          ✨ AI ile Oluştur
+        </a>
         {user ? (
           <>
             <a href="/panel" style={{
