@@ -2,7 +2,7 @@
 
 const features = [
   { icon: '⚡', title: 'Saniyeler içinde', desc: '4 adımda kartını oluştur, anında paylaş. Karmaşa yok.' },
-  { icon: '🎨', title: '11 hazır şablon', desc: 'Minimal, koyu, modern, klasik... Tarzına uygun olanı seç.' },
+  { icon: '🎨', title: '100+ hazır şablon', desc: 'Minimal, koyu, modern, klasik... Tarzına uygun olanı seç.' },
   { icon: '📱', title: 'QR + link', desc: 'Toplantıda QR göster, mesajda link gönder. İki seçenek de hazır.' },
   { icon: '✏️', title: 'Sonradan düzenle', desc: 'Hesap aç, kartlarını sakla, istediğin zaman güncelle.' },
   { icon: '🆓', title: 'Tamamen ücretsiz', desc: 'Premium paket yok, kullanım limiti yok. Açık kaynak felsefesi.' },

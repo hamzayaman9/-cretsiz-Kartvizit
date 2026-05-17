@@ -53,7 +53,7 @@ export default function Hero({ onStart }: Props) {
 
           <div className="mobile-stat-row" style={{ display: 'flex', gap: 32, marginTop: 48 }}>
             {[
-              { num: '11', label: 'Hazır şablon' },
+              { num: '100+', label: 'Hazır şablon' },
               { num: '∞', label: 'Sınırsız kart' },
               { num: '0₺', label: 'Maliyet' },
             ].map(s => (
