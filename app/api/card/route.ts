@@ -6,7 +6,7 @@ import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 
 const VALID_TEMPLATES: TemplateId[] = [
   'klasik', 'kapak', 'bolunmus', 'gece', 'yanpanel',
-  'minimal', 'kurumsal', 'cembersel', 'sicakkart', 'mozaik',
+  'minimal', 'kurumsal', 'cembersel', 'sicakkart', 'mozaik', 'bateman',
 ]
 
 function sanitize(str: string, max = 500): string {

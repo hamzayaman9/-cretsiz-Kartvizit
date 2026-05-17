@@ -312,6 +312,89 @@ export function SicakKartTemplate({ data }: { data: CardData }) {
   )
 }
 
+// ── BATEMAN ───────────────────────────────────────────────
+export function BatemanTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  const accent = data.accentColor || '#1a1a1a'
+  const font = "'Georgia', 'Palatino Linotype', 'Book Antiqua', serif"
+  return (
+    <div style={{
+      background: 'linear-gradient(145deg, #f7f3ed 0%, #ede8df 100%)',
+      borderRadius: 6,
+      padding: '32px 36px',
+      fontFamily: font,
+      minHeight: 220,
+      border: '1px solid #d6cfc4',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 3px rgba(0,0,0,0.08)',
+    }}>
+      {/* Üst satır: telefon sol | şirket sağ */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          {data.fields.telefon && v.telefon && (
+            <p style={{ margin: 0, fontSize: 11, color: accent, letterSpacing: '0.06em' }}>{v.telefon}</p>
+          )}
+          {data.fields.eposta && v.eposta && (
+            <p style={{ margin: '3px 0 0', fontSize: 10, color: accent, letterSpacing: '0.04em', opacity: 0.75 }}>{v.eposta}</p>
+          )}
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          {data.fields.sirket && v.sirket && (
+            <p style={{ margin: 0, fontSize: 13, color: accent, fontVariant: 'small-caps', letterSpacing: '0.12em', fontWeight: 600 }}>
+              {v.sirket}
+            </p>
+          )}
+          {data.fields.website && v.website && (
+            <p style={{ margin: '2px 0 0', fontSize: 9, color: accent, letterSpacing: '0.05em', opacity: 0.7 }}>
+              {v.website.replace(/^https?:\/\//, '')}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Orta: isim + unvan */}
+      <div style={{ textAlign: 'center', padding: '20px 0' }}>
+        {data.fields.isim && v.isim && (
+          <p style={{
+            margin: 0,
+            fontSize: 17,
+            color: accent,
+            fontVariant: 'small-caps',
+            letterSpacing: '0.3em',
+            fontWeight: 400,
+            lineHeight: 1.2,
+          }}>
+            {v.isim.toUpperCase()}
+          </p>
+        )}
+        {data.fields.unvan && v.unvan && (
+          <p style={{ margin: '6px 0 0', fontSize: 11, color: accent, letterSpacing: '0.12em', fontStyle: 'italic', opacity: 0.85 }}>
+            {v.unvan}
+          </p>
+        )}
+      </div>
+
+      {/* Alt: adres */}
+      <div style={{ textAlign: 'center' }}>
+        {data.fields.adres && v.adres && (
+          <p style={{ margin: 0, fontSize: 10, color: accent, letterSpacing: '0.07em', opacity: 0.75, lineHeight: 1.5 }}>
+            {v.adres}
+            {data.fields.telefon && v.telefon && !data.fields.eposta ? '' : ''}
+          </p>
+        )}
+        {!data.fields.adres && data.fields.linkedin && v.linkedin && (
+          <p style={{ margin: 0, fontSize: 10, color: accent, letterSpacing: '0.07em', opacity: 0.75 }}>
+            linkedin.com/in/{v.linkedin.replace('@', '')}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ── MOZAİK ────────────────────────────────────────────────
 export function MozaikTemplate({ data }: { data: CardData }) {
   const v = data.values

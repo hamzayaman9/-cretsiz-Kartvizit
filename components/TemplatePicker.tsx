@@ -12,6 +12,7 @@ const templates: { id: TemplateId; label: string; desc: string }[] = [
   { id: 'cembersel', label: 'Çembersel', desc: 'Yumuşak mavi, ortalanmış' },
   { id: 'sicakkart', label: 'Sıcak',     desc: 'Turuncu tonlar, samimi' },
   { id: 'mozaik',    label: 'Mozaik',    desc: 'Bloklu modern grid' },
+  { id: 'bateman',   label: 'Bateman',   desc: 'Krem kağıt, serif, klasik' },
 ]
 
 const PRESET_COLORS = [
