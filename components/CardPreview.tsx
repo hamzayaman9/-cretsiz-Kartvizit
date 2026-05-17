@@ -9,9 +9,16 @@ import {
   BoldTemplate, IkiRenkTemplate, SerbstTemplate,
 } from './templates'
 
-export default function CardPreview({ data }: { data: CardData }) {
-  const config = templateConfigMap[data.template]
-  if (config) return <ConfigurableTemplate data={data} config={config} />
+export default function CardPreview({ data: raw }: { data: CardData }) {
+  const config = templateConfigMap[raw.template]
+  if (config) return <ConfigurableTemplate data={raw} config={config} />
+
+  // For legacy templates: apply cardStyle overrides to accentColor
+  const cs = raw.cardStyle || {}
+  const data: CardData = {
+    ...raw,
+    accentColor: raw.accentColor || cs.bgColor || raw.accentColor || '',
+  }
 
   switch (data.template) {
     case 'klasik':    return <KlasikTemplate data={data} />

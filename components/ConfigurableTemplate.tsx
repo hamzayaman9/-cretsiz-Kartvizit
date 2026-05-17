@@ -27,7 +27,21 @@ function contacts(data: CardData) {
   return items
 }
 
-export default function ConfigurableTemplate({ data, config: c }: Props) {
+const radiusMap: Record<string, number> = { none: 0, small: 6, medium: 14, large: 24 }
+
+export default function ConfigurableTemplate({ data, config: baseConfig }: Props) {
+  const cs = data.cardStyle || {}
+  // Merge data overrides into config
+  const c: TemplateConfig = {
+    ...baseConfig,
+    accentColor: data.accentColor || baseConfig.accentColor,
+    fontFamily: (cs.fontFamily as TemplateConfig['fontFamily']) || baseConfig.fontFamily,
+    borderRadius: cs.borderRadius != null ? (radiusMap[cs.borderRadius] ?? baseConfig.borderRadius) : baseConfig.borderRadius,
+    bg: cs.bgColor || baseConfig.bg,
+    bgGradient: cs.bgGradient || baseConfig.bgGradient,
+    textColor: cs.textColor || baseConfig.textColor,
+  }
+
   const font = fontStyle(c.fontFamily)
   const ctc = contacts(data)
   const name = data.values.isim || 'Ad Soyad'
