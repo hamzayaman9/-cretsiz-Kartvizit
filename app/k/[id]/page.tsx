@@ -2,27 +2,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { CardData } from '@/lib/types'
 import CardPreview from '@/components/CardPreview'
-import QRStyled, { QRDotType, QRStyledHandle } from '@/components/QRStyled'
+import QRStyled, { QRStyledHandle } from '@/components/QRStyled'
 import Footer from '@/components/Footer'
 import LogoText from '@/components/LogoText'
 import { downloadVCard } from '@/lib/downloads'
-import { generateSignatureHtml } from '@/lib/signatureHtml'
-import SignatureModal from '@/components/SignatureModal'
-
-const QR_SHAPES: { type: QRDotType; label: string; preview: string }[] = [
-  { type: 'square',  label: 'Kare',    preview: '▪▪▪' },
-  { type: 'rounded', label: 'Yuvarlak', preview: '●▪●' },
-  { type: 'dots',    label: 'Nokta',   preview: '●●●' },
-]
 
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null)
   const [error, setError] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
-  const [qrShape, setQrShape] = useState<QRDotType>('square')
-  const [showName, setShowName] = useState(false)
-  const [showSignature, setShowSignature] = useState(false)
   const url = typeof window !== 'undefined' ? window.location.href : ''
   const [cardId, setCardId] = useState('')
   const qrRef = useRef<QRStyledHandle>(null)
@@ -75,9 +64,6 @@ export default function CardPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
-      {showSignature && card && (
-        <SignatureModal html={generateSignatureHtml(card, url)} onClose={() => setShowSignature(false)} />
-      )}
       <header className="mobile-header no-print" style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -121,77 +107,18 @@ export default function CardPage() {
             >
               SMS ile gönder
             </a>
-            <button
-              onClick={() => setShowSignature(true)}
-              style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#fff', color: '#7c3aed', border: '1.5px solid #e9d5ff', borderRadius: 12, fontSize: 13, padding: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-            >
-              ✉️ E-posta İmzası Al
-            </button>
           </div>
 
-          {/* QR Kod */}
+          {/* QR Kod - sadece tarama için, sade */}
           <div className="no-print" style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 24px', textAlign: 'center' }}>
             <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>QR Kod</p>
-
-            {/* Şekil seçici */}
-            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 16 }}>
-              {QR_SHAPES.map(s => (
-                <button
-                  key={s.type}
-                  onClick={() => setQrShape(s.type)}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: 20,
-                    border: `1.5px solid ${qrShape === s.type ? '#2563eb' : 'var(--border)'}`,
-                    background: qrShape === s.type ? 'var(--brand-50)' : '#fff',
-                    color: qrShape === s.type ? 'var(--brand-700)' : 'var(--muted)',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-
-            {/* QR görsel */}
             <div style={{ display: 'inline-block', background: '#fff', padding: 12, borderRadius: 12, border: '1px solid var(--border)' }}>
-              <QRStyled ref={qrRef} value={url} size={180} dotType={qrShape} />
-              {showName && card.values.isim && (
-                <p style={{ margin: '10px 0 0', fontSize: 13, fontWeight: 600, color: '#111', fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}>
-                  {card.values.isim}
-                </p>
-              )}
+              <QRStyled ref={qrRef} value={url} size={160} dotType="square" />
             </div>
-
-            {/* İsim göster toggle */}
-            <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', fontSize: 13, color: 'var(--ink-soft)', userSelect: 'none' }}>
-                <input
-                  type="checkbox"
-                  checked={showName}
-                  onChange={e => setShowName(e.target.checked)}
-                  style={{ width: 15, height: 15, accentColor: '#2563eb', cursor: 'pointer' }}
-                />
-                QR altına isim ekle
-              </label>
-            </div>
-
-            <p style={{ margin: '12px 0 14px', fontSize: 12, color: 'var(--muted)' }}>
-              Telefonla okutarak kartvizite ulaş
-            </p>
-
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button onClick={handleQRDownload} className="btn-secondary" style={{ fontSize: 13, padding: '10px 20px' }}>
-                QR İndir (PNG)
-              </button>
-              <button onClick={() => window.print()} className="btn-secondary" style={{ fontSize: 13, padding: '10px 20px' }}>
-                PDF Kaydet
-              </button>
-            </div>
+            <p style={{ margin: '10px 0 12px', fontSize: 12, color: 'var(--muted)' }}>Telefonla okutarak kartvizite ulaş</p>
+            <button onClick={handleQRDownload} className="btn-secondary" style={{ fontSize: 13, padding: '9px 20px' }}>
+              QR İndir (PNG)
+            </button>
           </div>
 
           <div className="no-print" style={{ marginTop: 24, textAlign: 'center' }}>
