@@ -88,16 +88,24 @@ export default function SignatureModal({ html, onClose }: Props) {
 <style>
   body { margin: 0; padding: 32px; font-family: Arial, sans-serif; background: #f8fafc; }
   .box { background: #fff; border-radius: 12px; padding: 28px; border: 1px solid #e2e8f0; }
-  .tip { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #1e40af; line-height: 1.6; }
+  .tip { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #1e40af; line-height: 1.6; user-select: none; -webkit-user-select: none; }
   kbd { background: #1e40af; color: #fff; border-radius: 4px; padding: 2px 7px; font-size: 12px; font-family: inherit; }
 </style>
 </head><body>
 <div class="tip">
-  <strong>1.</strong> <kbd>Ctrl+A</kbd> (Mac: <kbd>Cmd+A</kbd>) ile tümünü seç &nbsp;→&nbsp;
-  <strong>2.</strong> <kbd>Ctrl+C</kbd> ile kopyala &nbsp;→&nbsp;
-  <strong>3.</strong> Gmail imza kutusuna <kbd>Ctrl+V</kbd> ile yapıştır
+  İmza otomatik seçildi ✓ &nbsp;→&nbsp; <kbd>Ctrl+C</kbd> ile kopyala &nbsp;→&nbsp; Gmail imza kutusuna <kbd>Ctrl+V</kbd> ile yapıştır
 </div>
-<div class="box">${html}</div>
+<div class="box" id="sig">${html}</div>
+<script>
+  window.onload = function() {
+    var el = document.getElementById('sig');
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  };
+</script>
 </body></html>`)
     win.document.close()
   }
