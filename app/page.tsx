@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { CardData, defaultCardData, TemplateId } from '@/lib/types'
 import FieldSelector from '@/components/FieldSelector'
 import ValuesForm from '@/components/ValuesForm'
@@ -22,9 +22,17 @@ export default function HomePage() {
   const [savedId, setSavedId] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [showAuthForSave, setShowAuthForSave] = useState(false)
+  const [user, setUser] = useState<{ email: string } | null>(null)
+  const [claimed, setClaimed] = useState(false)
   const builderRef = useRef<HTMLDivElement>(null)
+  const resultRef = useRef<HTMLDivElement>(null)
 
   const shareUrl = savedId ? `${typeof window !== 'undefined' ? window.location.origin : ''}/k/${savedId}` : ''
+
+  useEffect(() => {
+    fetch('/api/auth/me').then(r => r.json()).then(d => { if (d.user) setUser(d.user) })
+  }, [])
 
   const scrollToBuilder = () => builderRef.current?.scrollIntoView({ behavior: 'smooth' })
 
@@ -32,13 +40,64 @@ export default function HomePage() {
   const updateValue = useCallback((key: keyof CardData['values'], value: string) => setData(d => ({ ...d, values: { ...d.values, [key]: value } })), [])
   const setTemplate = useCallback((t: TemplateId) => setData(d => ({ ...d, template: t })), [])
 
-  const handleSave = async () => {
+  const handleCreate = async () => {
     setSaving(true)
     try {
-      const res = await fetch('/api/card', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+      const res = await fetch('/api/card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
       const json = await res.json()
-      if (json.id) { setSavedId(json.id); setTimeout(() => { window.location.href = `/k/${json.id}` }, 1500) }
-    } catch { alert('Bir hata oluştu.') } finally { setSaving(false) }
+      if (json.id) {
+        setSavedId(json.id)
+        // Yeni sekmede aç
+        window.open(`/k/${json.id}`, '_blank')
+        // Sonuç alanına scroll
+        setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
+      }
+    } catch {
+      alert('Bir hata oluştu.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleClaim = async () => {
+    if (!savedId) return
+    try {
+      const res = await fetch('/api/card/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: savedId }),
+      })
+      const json = await res.json()
+      if (json.success) {
+        setClaimed(true)
+      } else {
+        alert(json.error || 'Kart kaydedilemedi')
+      }
+    } catch {
+      alert('Bir hata oluştu')
+    }
+  }
+
+  const handleAuthSuccess = async (email: string) => {
+    setUser({ email })
+    setShowAuth(false)
+    setShowAuthForSave(false)
+    // Eğer kart oluşturduysa otomatik bağla
+    if (savedId && !claimed) {
+      await handleClaim()
+    }
+  }
+
+  const handleSaveClick = () => {
+    if (user) {
+      handleClaim()
+    } else {
+      setShowAuthForSave(true)
+    }
   }
 
   const handleCopy = () => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000) }
@@ -59,7 +118,9 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => { setShowAuth(false); window.location.reload() }} />}
+      {(showAuth || showAuthForSave) && (
+        <AuthModal onClose={() => { setShowAuth(false); setShowAuthForSave(false) }} onSuccess={handleAuthSuccess} />
+      )}
 
       <Header onAuthClick={() => setShowAuth(true)} />
       <Hero onStart={scrollToBuilder} />
@@ -94,7 +155,7 @@ export default function HomePage() {
                     <button onClick={() => setStep((step + 1) as Step)} className="btn-primary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>İleri →</button>
                   ) : (
                     <button
-                      onClick={handleSave}
+                      onClick={handleCreate}
                       disabled={saving || !data.values.isim}
                       className={data.values.isim ? 'btn-primary' : ''}
                       style={{
@@ -118,34 +179,69 @@ export default function HomePage() {
                   </p>
                   <CardPreview data={data} />
                 </div>
-
-                {savedId && (
-                  <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px' }}>
-                    <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>✅ Kartvizitın hazır!</p>
-                    <p style={{ margin: '0 0 12px', fontSize: 12, color: 'var(--muted)' }}>Yönlendiriliyorsun...</p>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <input readOnly value={shareUrl} style={{ flex: 1, padding: '9px 12px', fontSize: 12, border: '1px solid var(--border)', borderRadius: 10, background: 'var(--surface)', color: 'var(--ink-soft)' }} />
-                      <button onClick={handleCopy} className="btn-primary" style={{ padding: '9px 16px', fontSize: 12 }}>
-                        {copied ? '✓' : 'Kopyala'}
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
 
+          {/* Mobil önizleme */}
           <div className="mobile-bottom-preview" style={{ display: 'none', marginTop: 20, background: '#fff', borderRadius: 16, padding: 20, border: '1px solid var(--border)' }}>
             <p style={{ margin: '0 0 12px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               Önizleme
             </p>
             <CardPreview data={data} />
-            {savedId && (
-              <div style={{ marginTop: 16, padding: '14px 16px', background: 'var(--surface)', borderRadius: 12 }}>
-                <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>✅ Hazır! Yönlendiriliyorsun...</p>
-              </div>
-            )}
           </div>
+
+          {/* Sonuç paneli */}
+          {savedId && (
+            <div ref={resultRef} style={{ marginTop: 32, background: '#fff', borderRadius: 20, boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--border)', padding: '32px', maxWidth: 600, margin: '32px auto 0' }} className="fade-up">
+              <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, #10b981, #059669)', borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, marginBottom: 12 }}>✓</div>
+                <h3 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartvizitin hazır!</h3>
+                <p style={{ margin: '6px 0 0', fontSize: 14, color: 'var(--muted)' }}>Yeni sekmede açıldı. Linki paylaşabilir veya kaydedebilirsin.</p>
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                <input readOnly value={shareUrl} style={{ flex: 1, padding: '11px 14px', fontSize: 13, border: '1px solid var(--border)', borderRadius: 10, background: 'var(--surface)', color: 'var(--ink-soft)' }} />
+                <button onClick={handleCopy} className="btn-primary" style={{ padding: '11px 18px', fontSize: 13 }}>
+                  {copied ? '✓' : 'Kopyala'}
+                </button>
+              </div>
+
+              <a href={`/k/${savedId}`} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ display: 'block', textAlign: 'center', textDecoration: 'none', fontSize: 14, padding: '11px', marginBottom: 16 }}>
+                Kartviziti görüntüle ↗
+              </a>
+
+              {/* Kaydet butonu */}
+              {!claimed ? (
+                <div style={{ background: 'linear-gradient(135deg, var(--brand-50), #dbeafe)', borderRadius: 14, padding: '20px 22px', border: '1px solid var(--brand-200)' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                    <div style={{ fontSize: 28 }}>💾</div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--brand-900)' }}>
+                        Kartını hesabına kaydet
+                      </p>
+                      <p style={{ margin: '4px 0 12px', fontSize: 12, color: 'var(--brand-700)' }}>
+                        {user ? 'Tek tıkla kartını hesabına ekle, istediğin zaman düzenle.' : 'Hesap oluştur, kartını sakla, istediğin zaman düzenle.'}
+                      </p>
+                      <button onClick={handleSaveClick} className="btn-primary" style={{ fontSize: 13, padding: '10px 20px' }}>
+                        {user ? '💾 Hesabıma kaydet' : '✨ Kayıt ol ve kaydet'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ background: '#f0fdf4', borderRadius: 14, padding: '16px 22px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ fontSize: 22 }}>✅</div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#166534' }}>Hesabına kaydedildi!</p>
+                    <p style={{ margin: '2px 0 0', fontSize: 12, color: '#15803d' }}>
+                      <a href="/panel" style={{ color: '#15803d', textDecoration: 'underline' }}>Kartlarım sayfasından</a> düzenleyebilirsin.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
