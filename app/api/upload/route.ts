@@ -33,8 +33,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Geçersiz dosya türü' }, { status: 400 })
     }
 
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
     const buffer = Buffer.from(await file.arrayBuffer())
+
+    // Magic bytes kontrolü — client'tan gelen MIME'a güvenmiyoruz
+    const isJpeg = buffer[0] === 0xFF && buffer[1] === 0xD8
+    const isPng = buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47
+    const isWebp = buffer.length > 11 && buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+    const isValidImage = isJpeg || isPng || isWebp
+    if (!isValidImage) {
+      return NextResponse.json({ error: 'Geçersiz dosya içeriği' }, { status: 400 })
+    }
+
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
 
     const { error } = await supabase.storage
       .from('kartvizit-fotograflari')

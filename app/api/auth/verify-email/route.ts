@@ -49,6 +49,14 @@ export async function PUT(req: NextRequest) {
     const { email, code } = await req.json()
     if (!email || !code) return NextResponse.json({ error: 'Email ve kod gerekli' }, { status: 400 })
 
+    // Brute-force koruması: 5 hatalı deneme / 15 dakika / email
+    const codeKey = `verify-code:${String(email).toLowerCase()}`
+    const codeLimit = checkRateLimit(codeKey, 5, 15 * 60 * 1000)
+    if (!codeLimit.allowed) {
+      const mins = Math.ceil((codeLimit.remainingMs || 0) / 60000)
+      return NextResponse.json({ error: `Çok fazla hatalı deneme, ${mins} dakika sonra tekrar dene` }, { status: 429 })
+    }
+
     const { data: user } = await supabase
       .from('users')
       .select('verification_code, verification_expires')

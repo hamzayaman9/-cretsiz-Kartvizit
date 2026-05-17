@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { CardData } from '@/lib/types'
+import { CardData, TemplateId } from '@/lib/types'
 import { createClient } from '@supabase/supabase-js'
 import { verifyToken } from '@/lib/auth'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
@@ -9,16 +9,29 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+const VALID_TEMPLATES: TemplateId[] = [
+  'klasik', 'kapak', 'bolunmus', 'gece', 'yanpanel',
+  'minimal', 'kurumsal', 'cembersel', 'sicakkart', 'mozaik',
+]
+
 function sanitize(str: string, max = 500): string {
   return String(str || '').slice(0, max).trim()
+}
+
+function isSafeImageUrl(value: unknown): value is string {
+  if (typeof value !== 'string' || value.length > 2000) return false
+  // Sadece Supabase storage URL'lerine izin ver
+  return value.startsWith('https://')
 }
 
 function sanitizeCard(data: any): CardData | null {
   if (!data || typeof data !== 'object') return null
   if (!data.values || !data.fields) return null
 
+  const template: TemplateId = VALID_TEMPLATES.includes(data.template) ? data.template : 'klasik'
+
   const clean: CardData = {
-    template: data.template || 'klasik',
+    template,
     fields: {
       isim: !!data.fields.isim,
       unvan: !!data.fields.unvan,
@@ -48,8 +61,8 @@ function sanitizeCard(data: any): CardData | null {
       github: sanitize(data.values.github, 50),
       youtube: sanitize(data.values.youtube, 200),
     },
-    profilFoto: typeof data.profilFoto === 'string' && data.profilFoto.length < 1000 ? data.profilFoto : null,
-    arkaplanFoto: typeof data.arkaplanFoto === 'string' && data.arkaplanFoto.length < 1000 ? data.arkaplanFoto : null,
+    profilFoto: isSafeImageUrl(data.profilFoto) ? data.profilFoto : null,
+    arkaplanFoto: isSafeImageUrl(data.arkaplanFoto) ? data.arkaplanFoto : null,
   }
   return clean
 }
