@@ -1,7 +1,4 @@
-export type TemplateId =
-  | 'klasik' | 'kapak' | 'bolunmus' | 'gece' | 'yanpanel'
-  | 'minimal' | 'kurumsal' | 'cembersel' | 'sicakkart' | 'mozaik'
-  | 'bateman' | 'gradient' | 'neon' | 'retro' | 'cam' | 'bold' | 'ikirenk' | 'serbest'
+export type TemplateId = string
 
 export type FontFamily = 'sans' | 'serif' | 'mono'
 export type BorderRadius = 'none' | 'small' | 'medium' | 'large'

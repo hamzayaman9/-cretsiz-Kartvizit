@@ -1,5 +1,7 @@
 'use client'
 import { CardData } from '@/lib/types'
+import { templateConfigMap } from '@/lib/templateConfigs'
+import ConfigurableTemplate from './ConfigurableTemplate'
 import {
   KlasikTemplate, KapakTemplate, BolunmusTemplate, GeceTemplate, YanpanelTemplate,
   MinimalTemplate, KurumsalTemplate, CembersalTemplate, SicakKartTemplate, MozaikTemplate,
@@ -8,6 +10,9 @@ import {
 } from './templates'
 
 export default function CardPreview({ data }: { data: CardData }) {
+  const config = templateConfigMap[data.template]
+  if (config) return <ConfigurableTemplate data={data} config={config} />
+
   switch (data.template) {
     case 'klasik':    return <KlasikTemplate data={data} />
     case 'kapak':     return <KapakTemplate data={data} />

@@ -14,6 +14,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import Features from '@/components/Features'
+import StyleBar from '@/components/StyleBar'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -116,7 +117,7 @@ export default function HomePage() {
           <PhotoUpload label="Arka plan fotoğrafı" value={data.arkaplanFoto} onChange={v => setData(d => ({ ...d, arkaplanFoto: v }))} hint="Kapak & Gece şablonlarında görünür" />
         </div>
       )
-      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} accentColor={data.accentColor} onColorChange={setAccentColor} cardStyle={data.cardStyle} onStyleChange={setCardStyle} />
+      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} />
     }
   }
 
@@ -176,13 +177,14 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="desktop-only mobile-card-padding" style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--surface)' }}>
+              <div className="desktop-only mobile-card-padding" style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 20, background: 'var(--surface)' }}>
                 <div>
                   <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     Canlı önizleme
                   </p>
                   <CardPreview data={data} />
                 </div>
+                <StyleBar accentColor={data.accentColor || ''} onColorChange={setAccentColor} cardStyle={data.cardStyle || {}} onStyleChange={setCardStyle} />
               </div>
             </div>
           </div>

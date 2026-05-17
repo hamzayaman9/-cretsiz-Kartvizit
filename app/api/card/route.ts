@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { CardData, CardStyle, TemplateId } from '@/lib/types'
+import { CardData, CardStyle } from '@/lib/types'
+import { ALL_TEMPLATE_IDS } from '@/lib/templateConfigs'
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin'
 import { verifyToken } from '@/lib/auth'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 
-const VALID_TEMPLATES: TemplateId[] = [
-  'klasik', 'kapak', 'bolunmus', 'gece', 'yanpanel',
-  'minimal', 'kurumsal', 'cembersel', 'sicakkart', 'mozaik', 'bateman',
-  'gradient', 'neon', 'retro', 'cam', 'bold', 'ikirenk', 'serbest',
-]
+const VALID_TEMPLATES = new Set(ALL_TEMPLATE_IDS)
 
 const VALID_FONT_FAMILIES = ['sans', 'serif', 'mono']
 const VALID_BORDER_RADIUS = ['none', 'small', 'medium', 'large']
@@ -48,7 +45,7 @@ function sanitizeCard(data: any): CardData | null {
   if (!data || typeof data !== 'object') return null
   if (!data.values || !data.fields) return null
 
-  const template: TemplateId = VALID_TEMPLATES.includes(data.template) ? data.template : 'klasik'
+  const template: string = VALID_TEMPLATES.has(data.template) ? data.template : 'klasik'
 
   const clean: CardData = {
     template,
