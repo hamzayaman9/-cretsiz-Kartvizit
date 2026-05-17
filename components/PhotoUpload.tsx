@@ -1,18 +1,37 @@
 'use client'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 
 interface Props {
   label: string
   value: string | null
-  onChange: (base64: string | null) => void
+  onChange: (url: string | null) => void
   hint?: string
 }
 
 export default function PhotoUpload({ label, value, onChange, hint }: Props) {
-  const handleFile = useCallback((file: File) => {
-    const reader = new FileReader()
-    reader.onload = e => onChange(e.target?.result as string)
-    reader.readAsDataURL(file)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleFile = useCallback(async (file: File) => {
+    setError('')
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Yükleme başarısız')
+        return
+      }
+      onChange(data.url)
+    } catch {
+      setError('Bağlantı hatası')
+    } finally {
+      setUploading(false)
+    }
   }, [onChange])
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -47,21 +66,34 @@ export default function PhotoUpload({ label, value, onChange, hint }: Props) {
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             gap: 4, height: 72,
             border: '1.5px dashed #d1d5db', borderRadius: 10,
-            cursor: 'pointer', background: '#fafafa',
+            cursor: uploading ? 'wait' : 'pointer', background: '#fafafa',
             transition: 'border-color 0.15s',
+            opacity: uploading ? 0.6 : 1,
           }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = '#111')}
+          onMouseEnter={e => !uploading && (e.currentTarget.style.borderColor = '#2563eb')}
           onMouseLeave={e => (e.currentTarget.style.borderColor = '#d1d5db')}
         >
-          <span style={{ fontSize: 20 }}>📷</span>
-          <span style={{ fontSize: 11, color: '#9ca3af' }}>Tıkla veya sürükle</span>
-          {hint && <span style={{ fontSize: 10, color: '#d1d5db' }}>{hint}</span>}
+          {uploading ? (
+            <>
+              <span style={{ fontSize: 16 }}>⏳</span>
+              <span style={{ fontSize: 11, color: '#6b7280' }}>Yükleniyor...</span>
+            </>
+          ) : (
+            <>
+              <span style={{ fontSize: 20 }}>📷</span>
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>Tıkla veya sürükle</span>
+              {hint && <span style={{ fontSize: 10, color: '#d1d5db' }}>{hint}</span>}
+            </>
+          )}
           <input
-            type="file" accept="image/*" style={{ display: 'none' }}
+            type="file" accept="image/jpeg,image/png,image/webp"
+            disabled={uploading}
+            style={{ display: 'none' }}
             onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
           />
         </label>
       )}
+      {error && <p style={{ margin: '6px 0 0', fontSize: 11, color: '#dc2626' }}>{error}</p>}
     </div>
   )
 }
