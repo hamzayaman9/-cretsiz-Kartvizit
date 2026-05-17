@@ -16,6 +16,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
   const [forgotEmail, setForgotEmail] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [kvkkAccepted, setKvkkAccepted] = useState(false)
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '12px 14px', fontSize: 14,
@@ -26,6 +27,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
   const handleRegisterLogin = async () => {
     setError('')
     if (!email || !password) { setError('Tüm alanları doldur'); return }
+    if (mode === 'register' && !kvkkAccepted) { setError('Devam etmek için KVKK metnini onaylamalısın'); return }
     setLoading(true)
     try {
       const res = await fetch(`/api/auth/${mode}`, {
@@ -152,13 +154,30 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
               </div>
             </div>
 
+            {mode === 'register' && (
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 14, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={kvkkAccepted}
+                  onChange={e => setKvkkAccepted(e.target.checked)}
+                  style={{ marginTop: 2, width: 16, height: 16, flexShrink: 0, accentColor: '#2563eb', cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.5 }}>
+                  <a href="/kvkk" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand-700)', fontWeight: 600, textDecoration: 'underline' }}>
+                    KVKK Aydınlatma Metni
+                  </a>
+                  'ni okudum ve kişisel verilerimin işlenmesini kabul ediyorum.
+                </span>
+              </label>
+            )}
+
             {error && (
               <div style={{ marginTop: 14, padding: '10px 14px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10 }}>
                 <p style={{ margin: 0, fontSize: 13, color: '#dc2626' }}>{error}</p>
               </div>
             )}
 
-            <button onClick={handleRegisterLogin} disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: 16, padding: '14px', fontSize: 15, opacity: loading ? 0.7 : 1 }}>
+            <button onClick={handleRegisterLogin} disabled={loading || (mode === 'register' && !kvkkAccepted)} className="btn-primary" style={{ width: '100%', marginTop: 16, padding: '14px', fontSize: 15, opacity: (loading || (mode === 'register' && !kvkkAccepted)) ? 0.5 : 1, cursor: (mode === 'register' && !kvkkAccepted) ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Bekle...' : mode === 'register' ? 'Hesap oluştur' : 'Giriş yap'}
             </button>
 
