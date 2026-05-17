@@ -18,10 +18,10 @@ const GUIDES: Record<string, { step: string; desc: string }[]> = {
     { step: '1', desc: 'Gmail\'i aç → Sağ üstten ⚙️ simgesine tıkla → "Tüm ayarları gör"' },
     { step: '2', desc: '"Genel" sekmesinde "İmza" bölümünü bul → "+ Yeni oluştur" tıkla' },
     { step: '3', desc: 'İmzana bir isim ver (örn. "Kartvizitim") → Oluştur' },
-    { step: '4', desc: 'Bu sayfada "Önizleme" sekmesine geç → "Tümünü Seç" butonuna bas' },
-    { step: '5', desc: 'Seçili içeriği kopyala (Ctrl+C / Cmd+C)' },
-    { step: '6', desc: 'Gmail imza kutusuna yapıştır (Ctrl+V / Cmd+V)' },
-    { step: '7', desc: 'Sayfanın en altındaki "Değişiklikleri kaydet" butonuna bas ✅' },
+    { step: '4', desc: '"Önizleme" sekmesine dön → "📋 İmzayı Kopyala" butonuna bas' },
+    { step: '5', desc: 'Gmail imza kutusunun içine tıkla → Ctrl+V (Mac: Cmd+V) ile yapıştır' },
+    { step: '6', desc: 'Sayfanın en altındaki "Değişiklikleri kaydet" butonuna bas ✅' },
+    { step: '💡', desc: 'İmza düz metin çıkıyorsa: imza kutusunun sağ alt köşesindeki "< >" simgesine tıklayıp HTML moduna geç, "HTML Kodu" sekmesindeki kodu yapıştır.' },
   ],
   outlook: [
     { step: '1', desc: 'Outlook\'u aç → Dosya → Seçenekler → Posta → "İmzalar..."' },
@@ -61,15 +61,27 @@ export default function SignatureModal({ html, onClose }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const selectAll = () => {
-    if (!previewRef.current) return
-    const range = document.createRange()
-    range.selectNodeContents(previewRef.current)
-    const sel = window.getSelection()
-    sel?.removeAllRanges()
-    sel?.addRange(range)
-    setSelected(true)
-    setTimeout(() => setSelected(false), 3000)
+  const copyRich = async () => {
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([''], { type: 'text/plain' }),
+        }),
+      ])
+      setSelected(true)
+      setTimeout(() => setSelected(false), 2000)
+    } catch {
+      // Tarayıcı ClipboardItem desteklemiyorsa manuel seç
+      if (!previewRef.current) return
+      const range = document.createRange()
+      range.selectNodeContents(previewRef.current)
+      const sel = window.getSelection()
+      sel?.removeAllRanges()
+      sel?.addRange(range)
+      setSelected(true)
+      setTimeout(() => setSelected(false), 3000)
+    }
   }
 
   return (
@@ -108,12 +120,12 @@ export default function SignatureModal({ html, onClose }: Props) {
                 <div ref={previewRef} dangerouslySetInnerHTML={{ __html: html }} style={{ cursor: 'text' }} />
               </div>
               <div style={{ background: '#eff6ff', borderRadius: 10, padding: '12px 16px', border: '1px solid #bfdbfe', fontSize: 13, color: '#1e3a8a', lineHeight: 1.6 }}>
-                <strong>Nasıl kopyalanır?</strong><br />
-                "Tümünü Seç" butonuna bas → kopyala (Ctrl+C) → e-posta programının imza kutusuna yapıştır (Ctrl+V)
+                <strong>Nasıl eklenir?</strong><br />
+                Aşağıdaki butona tıkla → Gmail / Outlook imza kutusuna <strong>Ctrl+V</strong> ile yapıştır. Direkt zengin metin olarak yapışır.
               </div>
-              <button onClick={selectAll}
+              <button onClick={copyRich}
                 style={{ padding: '13px', fontSize: 14, fontWeight: 600, background: selected ? '#16a34a' : '#2563eb', color: '#fff', border: 'none', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.2s' }}>
-                {selected ? '✓ Seçildi! Şimdi Ctrl+C ile kopyala' : '🖱️ Tümünü Seç'}
+                {selected ? '✓ Kopyalandı! Şimdi Ctrl+V ile yapıştır' : '📋 İmzayı Kopyala (Gmail / Outlook)'}
               </button>
             </div>
           )}
