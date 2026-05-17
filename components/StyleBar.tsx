@@ -46,26 +46,22 @@ export default function StyleBar({ accentColor, onColorChange, cardStyle, onStyl
 
   const currentFont = cardStyle.fontFamily
 
+  const hasAnyOverride = !!accentColor || Object.keys(cardStyle).some(k => (cardStyle as any)[k] !== undefined)
+
+  const resetAll = () => {
+    onColorChange('')
+    onStyleChange({})
+  }
+
   return (
     <div style={{ background: '#fff', borderRadius: 14, border: '1px solid var(--border)', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Hızlı Stil</p>
-
-      {/* Accent color */}
-      <div>
-        <p style={{ margin: '0 0 7px', fontSize: 11, color: 'var(--muted)' }}>Vurgu rengi</p>
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
-          {ACCENT_COLORS.map(c => (
-            <button key={c} title={c} onClick={() => onColorChange(c)}
-              style={{ width: 24, height: 24, borderRadius: '50%', background: c, border: accentColor === c ? '2.5px solid #111' : '1.5px solid transparent', outline: accentColor === c ? '2px solid #fff' : 'none', outlineOffset: '-2px', cursor: 'pointer', padding: 0, transition: 'transform 0.1s' }}
-              onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.2)')}
-              onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-            />
-          ))}
-          <input type="color" value={accentColor || '#2563eb'} onChange={e => onColorChange(e.target.value)}
-            style={{ width: 24, height: 24, border: 'none', padding: 0, borderRadius: '50%', cursor: 'pointer', background: 'none' }}
-          />
-          {accentColor && <button onClick={() => onColorChange('')} style={{ fontSize: 10, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}>✕</button>}
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Hızlı Stil</p>
+        {hasAnyOverride && (
+          <button onClick={resetAll} style={{ fontSize: 11, color: '#dc2626', background: 'none', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer', padding: '4px 10px', fontFamily: 'inherit' }}>
+            ↺ Tümünü Sıfırla
+          </button>
+        )}
       </div>
 
       {/* Font */}
