@@ -1,19 +1,28 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CardData } from '@/lib/types'
 import CardPreview from '@/components/CardPreview'
-import QRCode from 'react-qr-code'
+import QRStyled, { QRDotType, QRStyledHandle } from '@/components/QRStyled'
 import Footer from '@/components/Footer'
 import LogoText from '@/components/LogoText'
-import { downloadQR, downloadVCard } from '@/lib/downloads'
+import { downloadVCard } from '@/lib/downloads'
+
+const QR_SHAPES: { type: QRDotType; label: string; preview: string }[] = [
+  { type: 'square',  label: 'Kare',    preview: '▪▪▪' },
+  { type: 'rounded', label: 'Yuvarlak', preview: '●▪●' },
+  { type: 'dots',    label: 'Nokta',   preview: '●●●' },
+]
 
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null)
   const [error, setError] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
+  const [qrShape, setQrShape] = useState<QRDotType>('square')
+  const [showName, setShowName] = useState(false)
   const url = typeof window !== 'undefined' ? window.location.href : ''
   const [cardId, setCardId] = useState('')
+  const qrRef = useRef<QRStyledHandle>(null)
 
   useEffect(() => {
     const segments = window.location.pathname.split('/')
@@ -37,7 +46,7 @@ export default function CardPage() {
 
   const handleQRDownload = () => {
     const isim = card?.values.isim?.replace(/\s+/g, '-').toLowerCase() || 'kartvizit'
-    downloadQR(url, `${isim}-qr.png`)
+    qrRef.current?.download(`${isim}-qr`)
   }
 
   const handleVCardDownload = () => {
@@ -96,26 +105,73 @@ export default function CardPage() {
             <a
               href={`https://wa.me/?text=${encodeURIComponent('Kartvizitimi gör: ' + url)}`}
               target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#25d366', color: '#fff', borderRadius: 12, fontSize: 13, padding: '12px', fontWeight: 600, textDecoration: 'none' }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#25d366', color: '#fff', borderRadius: 12, fontSize: 13, padding: '12px', fontWeight: 600, textDecoration: 'none' }}
             >
               WhatsApp
             </a>
             <a
               href={`sms:?body=${encodeURIComponent('Kartvizitimi gör: ' + url)}`}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#fff', color: 'var(--brand-700)', border: '1.5px solid var(--brand-200)', borderRadius: 12, fontSize: 13, padding: '11px', fontWeight: 600, textDecoration: 'none' }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', color: 'var(--brand-700)', border: '1.5px solid var(--brand-200)', borderRadius: 12, fontSize: 13, padding: '11px', fontWeight: 600, textDecoration: 'none' }}
             >
               SMS ile gönder
             </a>
           </div>
 
-          {/* QR kod kartı - her zaman göster */}
-          <div className="no-print" style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
-            <div id="qr-code-svg" style={{ display: 'inline-block', background: '#fff', padding: 8 }}>
-              <QRCode value={url} size={160} />
+          {/* QR Kod */}
+          <div className="no-print" style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 24px', textAlign: 'center' }}>
+            <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>QR Kod</p>
+
+            {/* Şekil seçici */}
+            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 16 }}>
+              {QR_SHAPES.map(s => (
+                <button
+                  key={s.type}
+                  onClick={() => setQrShape(s.type)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: 20,
+                    border: `1.5px solid ${qrShape === s.type ? '#2563eb' : 'var(--border)'}`,
+                    background: qrShape === s.type ? 'var(--brand-50)' : '#fff',
+                    color: qrShape === s.type ? 'var(--brand-700)' : 'var(--muted)',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {s.label}
+                </button>
+              ))}
             </div>
-            <p style={{ margin: '12px 0 12px', fontSize: 12, color: 'var(--muted)' }}>
-              QR kodu telefonla okutarak kartvizite ulaş
+
+            {/* QR görsel */}
+            <div style={{ display: 'inline-block', background: '#fff', padding: 12, borderRadius: 12, border: '1px solid var(--border)' }}>
+              <QRStyled ref={qrRef} value={url} size={180} dotType={qrShape} />
+              {showName && card.values.isim && (
+                <p style={{ margin: '10px 0 0', fontSize: 13, fontWeight: 600, color: '#111', fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}>
+                  {card.values.isim}
+                </p>
+              )}
+            </div>
+
+            {/* İsim göster toggle */}
+            <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', fontSize: 13, color: 'var(--ink-soft)', userSelect: 'none' }}>
+                <input
+                  type="checkbox"
+                  checked={showName}
+                  onChange={e => setShowName(e.target.checked)}
+                  style={{ width: 15, height: 15, accentColor: '#2563eb', cursor: 'pointer' }}
+                />
+                QR altına isim ekle
+              </label>
+            </div>
+
+            <p style={{ margin: '12px 0 14px', fontSize: 12, color: 'var(--muted)' }}>
+              Telefonla okutarak kartvizite ulaş
             </p>
+
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={handleQRDownload} className="btn-secondary" style={{ fontSize: 13, padding: '10px 20px' }}>
                 QR İndir (PNG)
