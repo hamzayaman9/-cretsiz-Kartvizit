@@ -11,13 +11,13 @@ const features = [
 
 export default function Features() {
   return (
-    <section id="nasil-calisir" style={{ padding: '80px 32px', background: '#fff' }}>
+    <section id="nasil-calisir" className="mobile-section" style={{ padding: '80px 32px', background: '#fff' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56, maxWidth: 600, margin: '0 auto 56px' }}>
           <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 700, color: 'var(--brand-600)', letterSpacing: '0.1em' }}>
             ÖZELLİKLER
           </p>
-          <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+          <h2 className="mobile-features-title" style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
             Bilinmesi gereken her şey
           </h2>
           <p style={{ margin: '14px 0 0', fontSize: 16, color: 'var(--muted)', lineHeight: 1.6 }}>

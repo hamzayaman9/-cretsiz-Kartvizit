@@ -6,8 +6,8 @@ interface Props {
 
 export default function Hero({ onStart }: Props) {
   return (
-    <section className="hero-gradient" style={{ padding: '80px 32px 64px', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 60, alignItems: 'center' }}>
+    <section className="hero-gradient mobile-section" style={{ padding: '80px 32px 64px', position: 'relative', overflow: 'hidden' }}>
+      <div className="mobile-hero-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 60, alignItems: 'center' }}>
         <div className="fade-up">
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -21,7 +21,7 @@ export default function Hero({ onStart }: Props) {
             </span>
           </div>
 
-          <h1 style={{
+          <h1 className="mobile-hero-title" style={{
             margin: 0, fontFamily: 'var(--font-display)',
             fontSize: 56, lineHeight: 1.05, fontWeight: 800,
             color: 'var(--ink)', letterSpacing: '-0.025em',
@@ -37,31 +37,28 @@ export default function Hero({ onStart }: Props) {
             yanında
           </h1>
 
-          <p style={{
-            margin: '24px 0 36px', fontSize: 18, lineHeight: 1.6,
-            color: 'var(--ink-soft)', maxWidth: 520,
-          }}>
+          <p style={{ margin: '24px 0 36px', fontSize: 17, lineHeight: 1.6, color: 'var(--ink-soft)', maxWidth: 520 }}>
             Profesyonel dijital kartvizit oluştur, link veya QR kod ile saniyeler içinde paylaş.
             Kâğıt israfına son.
           </p>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div className="mobile-stack" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <button onClick={onStart} className="btn-primary" style={{ fontSize: 16 }}>
               Hemen başla →
             </button>
-            <a href="#nasil-calisir" style={{ fontSize: 15, fontWeight: 500, color: 'var(--ink-soft)', textDecoration: 'none' }}>
+            <a href="#nasil-calisir" style={{ fontSize: 15, fontWeight: 500, color: 'var(--ink-soft)', textDecoration: 'none', textAlign: 'center' }}>
               Nasıl çalışır?
             </a>
           </div>
 
-          <div style={{ display: 'flex', gap: 32, marginTop: 48 }}>
+          <div className="mobile-stat-row" style={{ display: 'flex', gap: 32, marginTop: 48 }}>
             {[
               { num: '5', label: 'Hazır şablon' },
               { num: '∞', label: 'Sınırsız kart' },
               { num: '0₺', label: 'Maliyet' },
             ].map(s => (
               <div key={s.label}>
-                <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: 'var(--brand-700)' }}>{s.num}</p>
+                <p className="mobile-stat-num" style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: 'var(--brand-700)' }}>{s.num}</p>
                 <p style={{ margin: 0, fontSize: 12, color: 'var(--muted)' }}>{s.label}</p>
               </div>
             ))}
@@ -70,7 +67,7 @@ export default function Hero({ onStart }: Props) {
 
         <div className="fade-up fade-delay-2" style={{ position: 'relative' }}>
           <div style={{ position: 'absolute', inset: -20, background: 'radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', zIndex: 0 }} />
-          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 400, marginLeft: 'auto' }}>
             <div style={{
               background: '#fff', borderRadius: 18, padding: 28,
               boxShadow: '0 20px 60px rgba(15, 23, 42, 0.12)',
@@ -81,7 +78,7 @@ export default function Hero({ onStart }: Props) {
                 <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg, #dbeafe, #93c5fd)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-700)', fontWeight: 700, fontSize: 18 }}>AY</div>
                 <div>
                   <p style={{ margin: 0, fontWeight: 600, color: 'var(--ink)', fontSize: 16 }}>Ahmet Yılmaz</p>
-                  <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>Senior Yazılım Geliştirici</p>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>Yazılım Geliştirici</p>
                 </div>
               </div>
               <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>

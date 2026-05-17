@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { CardData, defaultCardData, TemplateId } from '@/lib/types'
 import FieldSelector from '@/components/FieldSelector'
 import ValuesForm from '@/components/ValuesForm'
@@ -26,47 +26,22 @@ export default function HomePage() {
 
   const shareUrl = savedId ? `${typeof window !== 'undefined' ? window.location.origin : ''}/k/${savedId}` : ''
 
-  const scrollToBuilder = () => {
-    builderRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const scrollToBuilder = () => builderRef.current?.scrollIntoView({ behavior: 'smooth' })
 
-  const updateField = useCallback((key: keyof CardData['fields'], value: boolean) => {
-    setData(d => ({ ...d, fields: { ...d.fields, [key]: value } }))
-  }, [])
-
-  const updateValue = useCallback((key: keyof CardData['values'], value: string) => {
-    setData(d => ({ ...d, values: { ...d.values, [key]: value } }))
-  }, [])
-
-  const setTemplate = useCallback((t: TemplateId) => {
-    setData(d => ({ ...d, template: t }))
-  }, [])
+  const updateField = useCallback((key: keyof CardData['fields'], value: boolean) => setData(d => ({ ...d, fields: { ...d.fields, [key]: value } })), [])
+  const updateValue = useCallback((key: keyof CardData['values'], value: string) => setData(d => ({ ...d, values: { ...d.values, [key]: value } })), [])
+  const setTemplate = useCallback((t: TemplateId) => setData(d => ({ ...d, template: t })), [])
 
   const handleSave = async () => {
     setSaving(true)
     try {
-      const res = await fetch('/api/card', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
+      const res = await fetch('/api/card', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
       const json = await res.json()
-      if (json.id) {
-        setSavedId(json.id)
-        setTimeout(() => { window.location.href = `/k/${json.id}` }, 1500)
-      }
-    } catch {
-      alert('Bir hata oluştu.')
-    } finally {
-      setSaving(false)
-    }
+      if (json.id) { setSavedId(json.id); setTimeout(() => { window.location.href = `/k/${json.id}` }, 1500) }
+    } catch { alert('Bir hata oluştu.') } finally { setSaving(false) }
   }
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const handleCopy = () => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000) }
 
   const stepContent = () => {
     switch (step) {
@@ -84,22 +59,19 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
-      {showAuth && (
-        <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => { setShowAuth(false); window.location.reload() }} />
-      )}
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => { setShowAuth(false); window.location.reload() }} />}
 
       <Header onAuthClick={() => setShowAuth(true)} />
       <Hero onStart={scrollToBuilder} />
       <Features />
 
-      {/* Builder section */}
-      <section ref={builderRef} style={{ background: 'var(--surface)', padding: '80px 0 60px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
+      <section ref={builderRef} className="mobile-section" style={{ background: 'var(--surface)', padding: '80px 0 60px' }}>
+        <div className="mobile-padding" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 700, color: 'var(--brand-600)', letterSpacing: '0.1em' }}>
               KARTVİZİT OLUŞTURUCU
             </p>
-            <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
+            <h2 className="mobile-builder-title" style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
               Hadi kartını oluşturalım
             </h2>
             <p style={{ margin: '12px 0 0', fontSize: 16, color: 'var(--muted)' }}>
@@ -107,29 +79,19 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{
-            background: '#fff',
-            borderRadius: 24,
-            boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--border)',
-            overflow: 'hidden',
-          }}>
+          <div style={{ background: '#fff', borderRadius: 24, boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--border)', overflow: 'hidden' }}>
             <StepIndicator current={step} onChange={(s) => setStep(s as Step)} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr' }}>
-              {/* Sol panel */}
-              <div style={{ borderRight: '1px solid var(--border)', padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: 540 }}>
+            <div className="desktop-grid" style={{ display: 'grid', gridTemplateColumns: '340px 1fr' }}>
+              <div className="mobile-card-padding" style={{ borderRight: '1px solid var(--border)', padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: 540 }}>
                 {stepContent()}
 
                 <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 20 }}>
                   {step > 1 && (
-                    <button onClick={() => setStep((step - 1) as Step)} className="btn-secondary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>
-                      ← Geri
-                    </button>
+                    <button onClick={() => setStep((step - 1) as Step)} className="btn-secondary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>← Geri</button>
                   )}
                   {step < 4 ? (
-                    <button onClick={() => setStep((step + 1) as Step)} className="btn-primary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>
-                      İleri →
-                    </button>
+                    <button onClick={() => setStep((step + 1) as Step)} className="btn-primary" style={{ flex: 1, padding: '13px', fontSize: 14 }}>İleri →</button>
                   ) : (
                     <button
                       onClick={handleSave}
@@ -149,8 +111,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Sağ panel */}
-              <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--surface)' }}>
+              <div className="desktop-only mobile-card-padding" style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--surface)' }}>
                 <div>
                   <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     Canlı önizleme
@@ -172,6 +133,18 @@ export default function HomePage() {
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="mobile-bottom-preview" style={{ display: 'none', marginTop: 20, background: '#fff', borderRadius: 16, padding: 20, border: '1px solid var(--border)' }}>
+            <p style={{ margin: '0 0 12px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              Önizleme
+            </p>
+            <CardPreview data={data} />
+            {savedId && (
+              <div style={{ marginTop: 16, padding: '14px 16px', background: 'var(--surface)', borderRadius: 12 }}>
+                <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>✅ Hazır! Yönlendiriliyorsun...</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

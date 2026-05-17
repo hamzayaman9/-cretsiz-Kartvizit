@@ -62,7 +62,7 @@ export default function EditPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
+      <header className="mobile-header" style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
@@ -71,14 +71,12 @@ export default function EditPage() {
               <path d="M7 10V13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
             </svg>
           </div>
-          <span style={{ display: 'inline-block' }}>
-            <LogoText size={16} />
-          </span>
+          <LogoText size={16} />
         </a>
         <a href={`/k/${cardId}`} style={{ fontSize: 13, color: 'var(--muted)', textDecoration: 'none' }}>← Kartı görüntüle</a>
       </header>
 
-      <div style={{ flex: 1, padding: '32px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+      <div className="mobile-padding" style={{ flex: 1, padding: '32px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
         <div style={{ marginBottom: 24 }}>
           <p style={{ margin: '0 0 6px', fontSize: 12, fontWeight: 700, color: 'var(--brand-600)', letterSpacing: '0.1em' }}>DÜZENLEME</p>
           <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartını güncelle</h1>
@@ -86,8 +84,8 @@ export default function EditPage() {
 
         <div style={{ background: '#fff', borderRadius: 20, boxShadow: '0 10px 30px rgba(15, 23, 42, 0.06), 0 0 0 1px var(--border)', overflow: 'hidden' }}>
           <StepIndicator current={step} onChange={(s) => setStep(s as Step)} />
-          <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr' }}>
-            <div style={{ borderRight: '1px solid var(--border)', padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: 540 }}>
+          <div className="desktop-grid" style={{ display: 'grid', gridTemplateColumns: '340px 1fr' }}>
+            <div className="mobile-card-padding" style={{ borderRight: '1px solid var(--border)', padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: 540 }}>
               {stepContent()}
               <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 20 }}>
                 {step > 1 && (
@@ -102,13 +100,20 @@ export default function EditPage() {
                 )}
               </div>
             </div>
-            <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--surface)' }}>
+            <div className="desktop-only mobile-card-padding" style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--surface)' }}>
               <div>
                 <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Canlı önizleme</p>
                 <CardPreview data={data} />
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mobile-bottom-preview" style={{ display: 'none', marginTop: 20, background: '#fff', borderRadius: 16, padding: 20, border: '1px solid var(--border)' }}>
+          <p style={{ margin: '0 0 12px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            Önizleme
+          </p>
+          <CardPreview data={data} />
         </div>
       </div>
 
