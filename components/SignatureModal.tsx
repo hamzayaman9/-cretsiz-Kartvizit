@@ -61,27 +61,22 @@ export default function SignatureModal({ html, onClose }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const copyRich = async () => {
-    try {
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          'text/html': new Blob([html], { type: 'text/html' }),
-          'text/plain': new Blob([''], { type: 'text/plain' }),
-        }),
-      ])
-      setSelected(true)
-      setTimeout(() => setSelected(false), 2000)
-    } catch {
-      // Tarayıcı ClipboardItem desteklemiyorsa manuel seç
-      if (!previewRef.current) return
-      const range = document.createRange()
-      range.selectNodeContents(previewRef.current)
-      const sel = window.getSelection()
-      sel?.removeAllRanges()
-      sel?.addRange(range)
-      setSelected(true)
-      setTimeout(() => setSelected(false), 3000)
-    }
+  const copyRich = () => {
+    const el = document.createElement('div')
+    el.setAttribute('contenteditable', 'true')
+    el.innerHTML = html
+    el.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;'
+    document.body.appendChild(el)
+    const range = document.createRange()
+    range.selectNodeContents(el)
+    const sel = window.getSelection()
+    sel?.removeAllRanges()
+    sel?.addRange(range)
+    document.execCommand('copy')
+    document.body.removeChild(el)
+    sel?.removeAllRanges()
+    setSelected(true)
+    setTimeout(() => setSelected(false), 2000)
   }
 
   return (
