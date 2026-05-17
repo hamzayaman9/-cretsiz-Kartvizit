@@ -1,5 +1,6 @@
 'use client'
 import LogoText from './LogoText'
+import LogoIcon from './LogoIcon'
 
 export default function Footer() {
   return (
@@ -11,18 +12,7 @@ export default function Footer() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20, marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{
-              width: 36, height: 36,
-              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-              borderRadius: 10,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
-                <rect x="1" y="1" width="12" height="9" rx="2" stroke="white" strokeWidth="1.4"/>
-                <path d="M4 13H10" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-                <path d="M7 10V13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-              </svg>
-            </div>
+            <LogoIcon size={36} />
             <div>
               <LogoText size={16} color="#fff" iColor="#3b82f6" />
               <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>Profesyonel dijital kartvizit</p>

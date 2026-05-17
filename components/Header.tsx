@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import LogoText from './LogoText'
+import LogoIcon from './LogoIcon'
 
 interface Props {
   onAuthClick: () => void
@@ -35,19 +36,8 @@ export default function Header({ onAuthClick }: Props) {
       gap: 12,
     }}>
       <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', minWidth: 0 }}>
-        <div style={{
-          width: 36, height: 36,
-          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-          borderRadius: 10,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
-          flexShrink: 0,
-        }}>
-          <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
-            <rect x="1" y="1" width="12" height="9" rx="2" stroke="white" strokeWidth="1.4"/>
-            <path d="M4 13H10" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-            <path d="M7 10V13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-          </svg>
+        <div style={{ boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)' }}>
+          <LogoIcon size={36} />
         </div>
         <div style={{ minWidth: 0 }}>
           <LogoText size={17} />
