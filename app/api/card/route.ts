@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { CardData, TemplateId } from '@/lib/types'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin'
 import { verifyToken } from '@/lib/auth'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 const VALID_TEMPLATES: TemplateId[] = [
   'klasik', 'kapak', 'bolunmus', 'gece', 'yanpanel',

@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin'
 import { hashPassword, createToken } from '@/lib/auth'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 function validatePassword(pw: string): string | null {
   if (pw.length < 8) return 'Şifre en az 8 karakter olmalı'
