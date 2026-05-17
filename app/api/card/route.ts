@@ -87,3 +87,29 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'Hata olustu' }, { status: 500 })
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const token = req.cookies.get('auth_token')?.value
+    if (!token) return NextResponse.json({ error: 'Giris gerekli' }, { status: 401 })
+
+    const payload = verifyToken(token)
+    if (!payload) return NextResponse.json({ error: 'Gecersiz token' }, { status: 401 })
+
+    const id = req.nextUrl.searchParams.get('id')
+    if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 })
+
+    const { error } = await supabase
+      .from('cards')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', payload.userId)
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('DELETE error:', err)
+    return NextResponse.json({ error: 'Hata olustu' }, { status: 500 })
+  }
+}

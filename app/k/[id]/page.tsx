@@ -5,11 +5,11 @@ import CardPreview from '@/components/CardPreview'
 import QRCode from 'react-qr-code'
 import Footer from '@/components/Footer'
 import LogoText from '@/components/LogoText'
+import { downloadQR, downloadVCard } from '@/lib/downloads'
 
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null)
   const [error, setError] = useState(false)
-  const [showQR, setShowQR] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
   const url = typeof window !== 'undefined' ? window.location.href : ''
@@ -35,6 +35,15 @@ export default function CardPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleQRDownload = () => {
+    const isim = card?.values.isim?.replace(/\s+/g, '-').toLowerCase() || 'kartvizit'
+    downloadQR(url, `${isim}-qr.png`)
+  }
+
+  const handleVCardDownload = () => {
+    if (card) downloadVCard(card)
+  }
+
   if (error) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface)' }}>
       <div style={{ background: '#fff', borderRadius: 20, padding: '48px', textAlign: 'center', maxWidth: 400, border: '1px solid var(--border)' }}>
@@ -54,7 +63,7 @@ export default function CardPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
+      <header className="mobile-header" style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
@@ -63,9 +72,7 @@ export default function CardPage() {
               <path d="M7 10V13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
             </svg>
           </div>
-          <span style={{ display: 'inline-block' }}>
-            <LogoText size={16} />
-          </span>
+          <LogoText size={16} />
         </a>
         {isOwner && (
           <a href={`/duzenle/${cardId}`} className="btn-primary" style={{ fontSize: 13, padding: '9px 18px', textDecoration: 'none', display: 'inline-block' }}>
@@ -74,26 +81,34 @@ export default function CardPage() {
         )}
       </header>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 16px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '32px 16px' }}>
         <div style={{ width: '100%', maxWidth: 480 }} className="fade-up">
           <CardPreview data={card} />
 
-          <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-            <button onClick={handleCopy} className="btn-primary" style={{ flex: 1, fontSize: 14, padding: '13px' }}>
+          {/* Aksiyon butonları */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
+            <button onClick={handleCopy} className="btn-primary" style={{ fontSize: 13, padding: '12px' }}>
               {copied ? '✓ Kopyalandı' : '🔗 Linki kopyala'}
             </button>
-            <button onClick={() => setShowQR(v => !v)} className="btn-secondary" style={{ fontSize: 14, padding: '12px 22px' }}>
-              QR
+            <button onClick={handleVCardDownload} className="btn-secondary" style={{ fontSize: 13, padding: '11px' }}>
+              📇 Rehbere ekle
             </button>
           </div>
 
-          {showQR && (
-            <div style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 24, display: 'flex', justifyContent: 'center' }} className="fade-in">
+          {/* QR kod kartı - her zaman göster */}
+          <div style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
+            <div id="qr-code-svg" style={{ display: 'inline-block', background: '#fff', padding: 8 }}>
               <QRCode value={url} size={160} />
             </div>
-          )}
+            <p style={{ margin: '12px 0 12px', fontSize: 12, color: 'var(--muted)' }}>
+              QR kodu telefonla okutarak kartvizite ulaş
+            </p>
+            <button onClick={handleQRDownload} className="btn-secondary" style={{ fontSize: 13, padding: '10px 20px' }}>
+              ⬇️ QR kodu indir (PNG)
+            </button>
+          </div>
 
-          <div style={{ marginTop: 28, textAlign: 'center' }}>
+          <div style={{ marginTop: 24, textAlign: 'center' }}>
             <a href="/" style={{ fontSize: 13, color: 'var(--brand-700)', textDecoration: 'none', fontWeight: 500 }}>
               Sen de ücretsiz kartvizit oluştur →
             </a>

@@ -211,3 +211,127 @@ export function YanpanelTemplate({ data }: { data: CardData }) {
     </div>
   )
 }
+
+// ── MİNİMAL ───────────────────────────────────────────────
+export function MinimalTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  return (
+    <div style={{ background: '#fff', borderRadius: 4, padding: '40px 32px', fontFamily: "'DM Sans', sans-serif", minHeight: 200, border: '1px solid #f1f5f9' }}>
+      <div style={{ textAlign: 'left' }}>
+        {data.fields.profil && <div style={{ marginBottom: 24 }}><Avatar src={data.profilFoto} initials={initials(v.isim)} size={64} /></div>}
+        {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 24, fontWeight: 300, color: '#111', letterSpacing: '-0.02em' }}>{v.isim}</p>}
+        {data.fields.unvan && v.unvan && <p style={{ margin: '4px 0 0', fontSize: 13, color: '#94a3b8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{v.unvan}</p>}
+        {data.fields.sirket && v.sirket && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#cbd5e1' }}>{v.sirket}</p>}
+        <div style={{ width: 24, height: 1, background: '#cbd5e1', margin: '20px 0' }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 13, color: '#475569', textDecoration: 'none' }}>{v.telefon}</a>}
+          {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 13, color: '#475569', textDecoration: 'none' }}>{v.eposta}</a>}
+          {data.fields.adres && v.adres && <span style={{ fontSize: 13, color: '#475569' }}>{v.adres}</span>}
+        </div>
+        <SocialRow data={data} />
+      </div>
+    </div>
+  )
+}
+
+// ── KURUMSAL ──────────────────────────────────────────────
+export function KurumsalTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  return (
+    <div style={{ borderRadius: 12, overflow: 'hidden', fontFamily: "'DM Sans', sans-serif", border: '1px solid #e5e7eb' }}>
+      <div style={{ background: '#1e3a8a', padding: '24px 28px', color: '#fff', display: 'flex', alignItems: 'center', gap: 16 }}>
+        {data.fields.profil && <Avatar src={data.profilFoto} initials={initials(v.isim)} size={52} />}
+        <div>
+          {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>{v.isim}</p>}
+          {data.fields.unvan && v.unvan && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#bfdbfe' }}>{v.unvan}</p>}
+          {data.fields.sirket && v.sirket && <p style={{ margin: '2px 0 0', fontSize: 11, color: '#93c5fd' }}>{v.sirket}</p>}
+        </div>
+      </div>
+      <div style={{ background: '#fff', padding: '20px 28px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {data.fields.telefon && v.telefon && <ContactRow icon="📞" value={v.telefon} href={`tel:${v.telefon}`} />}
+        {data.fields.eposta && v.eposta && <ContactRow icon="✉️" value={v.eposta} href={`mailto:${v.eposta}`} />}
+        {data.fields.adres && v.adres && <ContactRow icon="📍" value={v.adres} />}
+        <SocialRow data={data} />
+      </div>
+    </div>
+  )
+}
+
+// ── ÇEMBERSEL ─────────────────────────────────────────────
+export function CembersalTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  return (
+    <div style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)', borderRadius: 24, padding: '36px 28px', fontFamily: "'DM Sans', sans-serif", position: 'relative', overflow: 'hidden', minHeight: 220 }}>
+      <div style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: 'rgba(14, 165, 233, 0.1)' }} />
+      <div style={{ position: 'absolute', bottom: -20, left: -20, width: 80, height: 80, borderRadius: '50%', background: 'rgba(59, 130, 246, 0.08)' }} />
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+        {data.fields.profil && <div style={{ marginBottom: 16 }}><Avatar src={data.profilFoto} initials={initials(v.isim)} size={72} /></div>}
+        {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#0c4a6e' }}>{v.isim}</p>}
+        {data.fields.unvan && v.unvan && <p style={{ margin: '3px 0 0', fontSize: 13, color: '#0369a1' }}>{v.unvan}</p>}
+        {data.fields.sirket && v.sirket && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#0284c7' }}>{v.sirket}</p>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 14 }}>
+          {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 12, color: '#075985', textDecoration: 'none' }}>📞 {v.telefon}</a>}
+          {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 12, color: '#075985', textDecoration: 'none' }}>✉️ {v.eposta}</a>}
+          {data.fields.adres && v.adres && <span style={{ fontSize: 12, color: '#075985' }}>📍 {v.adres}</span>}
+        </div>
+        <SocialRow data={data} />
+      </div>
+    </div>
+  )
+}
+
+// ── SICAK KART ────────────────────────────────────────────
+export function SicakKartTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  return (
+    <div style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)', borderRadius: 20, padding: '32px 28px', fontFamily: "'DM Sans', sans-serif", minHeight: 200 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 18 }}>
+        {data.fields.profil && <Avatar src={data.profilFoto} initials={initials(v.isim)} size={60} />}
+        <div style={{ flex: 1 }}>
+          {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#7c2d12' }}>{v.isim}</p>}
+          {data.fields.unvan && v.unvan && <p style={{ margin: '2px 0 0', fontSize: 13, color: '#9a3412' }}>{v.unvan}</p>}
+          {data.fields.sirket && v.sirket && <p style={{ margin: '1px 0 0', fontSize: 12, color: '#c2410c' }}>{v.sirket}</p>}
+        </div>
+      </div>
+      <div style={{ background: 'rgba(255,255,255,0.6)', borderRadius: 12, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {data.fields.telefon && v.telefon && <a href={`tel:${v.telefon}`} style={{ fontSize: 13, color: '#7c2d12', textDecoration: 'none' }}>📞 {v.telefon}</a>}
+        {data.fields.eposta && v.eposta && <a href={`mailto:${v.eposta}`} style={{ fontSize: 13, color: '#7c2d12', textDecoration: 'none' }}>✉️ {v.eposta}</a>}
+        {data.fields.adres && v.adres && <span style={{ fontSize: 13, color: '#7c2d12' }}>📍 {v.adres}</span>}
+      </div>
+      <SocialRow data={data} />
+    </div>
+  )
+}
+
+// ── MOZAİK ────────────────────────────────────────────────
+export function MozaikTemplate({ data }: { data: CardData }) {
+  const v = data.values
+  return (
+    <div style={{ fontFamily: "'DM Sans', sans-serif", borderRadius: 16, overflow: 'hidden', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, background: '#0f172a', padding: 4 }}>
+      <div style={{ background: '#fff', padding: '20px 18px', borderRadius: 12, gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: 14 }}>
+        {data.fields.profil && <Avatar src={data.profilFoto} initials={initials(v.isim)} size={52} />}
+        <div>
+          {data.fields.isim && v.isim && <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111' }}>{v.isim}</p>}
+          {data.fields.unvan && v.unvan && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#64748b' }}>{v.unvan}</p>}
+        </div>
+      </div>
+      {data.fields.telefon && v.telefon && (
+        <a href={`tel:${v.telefon}`} style={{ background: '#1e293b', color: '#cbd5e1', padding: '14px 16px', borderRadius: 12, fontSize: 12, textDecoration: 'none' }}>
+          📞 {v.telefon}
+        </a>
+      )}
+      {data.fields.eposta && v.eposta && (
+        <a href={`mailto:${v.eposta}`} style={{ background: '#1e293b', color: '#cbd5e1', padding: '14px 16px', borderRadius: 12, fontSize: 12, textDecoration: 'none' }}>
+          ✉️ {v.eposta}
+        </a>
+      )}
+      {(data.fields.linkedin && v.linkedin) || (data.fields.github && v.github) ? (
+        <div style={{ background: '#3b82f6', color: '#fff', padding: '14px 16px', borderRadius: 12, fontSize: 12, gridColumn: 'span 2', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {data.fields.linkedin && v.linkedin && <a href={socialUrl('linkedin', v.linkedin)} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>LinkedIn</a>}
+          {data.fields.github && v.github && <a href={socialUrl('github', v.github)} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>GitHub</a>}
+          {data.fields.twitter && v.twitter && <a href={socialUrl('twitter', v.twitter)} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Twitter</a>}
+        </div>
+      ) : null}
+    </div>
+  )
+}

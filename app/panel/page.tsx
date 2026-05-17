@@ -14,18 +14,42 @@ interface SavedCard {
 export default function PanelPage() {
   const [cards, setCards] = useState<SavedCard[]>([])
   const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => { if (!d.user) window.location.href = '/' })
-    fetch('/api/user/cards').then(r => r.json()).then(d => { setCards(d.cards || []); setLoading(false) }).catch(() => setLoading(false))
+    loadCards()
   }, [])
+
+  const loadCards = () => {
+    fetch('/api/user/cards').then(r => r.json()).then(d => { setCards(d.cards || []); setLoading(false) }).catch(() => setLoading(false))
+  }
+
+  const handleDelete = async (id: string) => {
+    setDeleting(id)
+    try {
+      const res = await fetch(`/api/card?id=${id}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (json.success) {
+        setCards(cs => cs.filter(c => c.id !== id))
+      } else {
+        alert('Silinemedi: ' + json.error)
+      }
+    } catch {
+      alert('Bir hata oluştu')
+    } finally {
+      setDeleting(null)
+      setConfirmDelete(null)
+    }
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
       <Header onAuthClick={() => {}} />
 
-      <div style={{ flex: 1, padding: '40px 32px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+      <div className="mobile-padding" style={{ flex: 1, padding: '40px 32px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+        <div className="mobile-stack" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
           <div>
             <p style={{ margin: '0 0 6px', fontSize: 12, fontWeight: 700, color: 'var(--brand-600)', letterSpacing: '0.1em' }}>HESABIM</p>
             <h1 style={{ margin: 0, fontSize: 32, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}>
@@ -51,24 +75,51 @@ export default function PanelPage() {
             </a>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 20 }}>
             {cards.map(card => (
-              <div key={card.id} style={{ background: '#fff', borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 10px 30px rgba(15, 23, 42, 0.08)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)' }}
-              >
+              <div key={card.id} style={{ background: '#fff', borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden', transition: 'all 0.2s', position: 'relative' }}>
+                {confirmDelete === card.id && (
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.92)', borderRadius: 16, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 }}>
+                    <div style={{ fontSize: 28 }}>⚠️</div>
+                    <p style={{ margin: 0, fontSize: 14, color: '#fff', textAlign: 'center', fontWeight: 500 }}>
+                      Bu kartı kalıcı olarak silmek istediğine emin misin?
+                    </p>
+                    <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+                      Bu işlem geri alınamaz
+                    </p>
+                    <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                      <button
+                        onClick={() => setConfirmDelete(null)}
+                        style={{ flex: 1, padding: '10px', fontSize: 13, fontWeight: 500, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}
+                      >
+                        Vazgeç
+                      </button>
+                      <button
+                        onClick={() => handleDelete(card.id)}
+                        disabled={deleting === card.id}
+                        style={{ flex: 1, padding: '10px', fontSize: 13, fontWeight: 600, background: '#dc2626', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}
+                      >
+                        {deleting === card.id ? 'Siliniyor...' : 'Evet, sil'}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div style={{ padding: 18 }}>
                   <CardPreview data={card.data} />
                 </div>
-                <div style={{ borderTop: '1px solid var(--border)', padding: '14px 18px', display: 'flex', gap: 8 }}>
+                <div style={{ borderTop: '1px solid var(--border)', padding: '14px 18px', display: 'flex', gap: 6 }}>
                   <a href={`/k/${card.id}`} className="btn-primary" style={{ flex: 1, fontSize: 12, padding: '9px', textDecoration: 'none', textAlign: 'center' }}>
                     Görüntüle
                   </a>
-                  <a href={`/duzenle/${card.id}`} className="btn-secondary" style={{ flex: 1, fontSize: 12, padding: '8px', textDecoration: 'none', textAlign: 'center' }}>
+                  <a href={`/duzenle/${card.id}`} className="btn-secondary" style={{ fontSize: 12, padding: '8px 12px', textDecoration: 'none', textAlign: 'center' }}>
                     Düzenle
                   </a>
-                  <button onClick={() => navigator.clipboard.writeText(`${window.location.origin}/k/${card.id}`)} style={{ padding: '8px 14px', fontSize: 12, fontWeight: 500, background: 'var(--surface)', color: 'var(--ink-soft)', border: '1px solid var(--border)', borderRadius: 10, cursor: 'pointer' }}>
-                    🔗
+                  <button
+                    onClick={() => setConfirmDelete(card.id)}
+                    style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, background: '#fff', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit' }}
+                    title="Sil"
+                  >
+                    🗑️
                   </button>
                 </div>
               </div>

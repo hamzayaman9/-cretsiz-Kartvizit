@@ -1,4 +1,4 @@
-export type TemplateId = 'klasik' | 'kapak' | 'bolunmus' | 'gece' | 'yanpanel'
+export type TemplateId = 'klasik' | 'kapak' | 'bolunmus' | 'gece' | 'yanpanel' | 'minimal' | 'kurumsal' | 'cembersel' | 'sicakkart' | 'mozaik'
 
 export interface CardData {
   id?: string
