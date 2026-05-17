@@ -6,8 +6,7 @@ import ValuesForm from '@/components/ValuesForm'
 import CardPreview from '@/components/CardPreview'
 import TemplatePicker from '@/components/TemplatePicker'
 import PhotoUpload from '@/components/PhotoUpload'
-import QRCode from 'react-qr-code'
-import { downloadQR } from '@/lib/downloads'
+import QRStyled, { QRDotType, QRStyledHandle } from '@/components/QRStyled'
 import StepIndicator from '@/components/StepIndicator'
 import AuthModal from '@/components/AuthModal'
 import Footer from '@/components/Footer'
@@ -15,6 +14,8 @@ import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import Features from '@/components/Features'
 import StyleBar from '@/components/StyleBar'
+import SignatureModal from '@/components/SignatureModal'
+import { generateSignatureHtml } from '@/lib/signatureHtml'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -28,8 +29,11 @@ export default function HomePage() {
   const [showAuthForSave, setShowAuthForSave] = useState(false)
   const [user, setUser] = useState<{ email: string } | null>(null)
   const [claimed, setClaimed] = useState(false)
+  const [qrShape, setQrShape] = useState<QRDotType>('square')
+  const [showSignature, setShowSignature] = useState(false)
   const builderRef = useRef<HTMLDivElement>(null)
   const resultRef = useRef<HTMLDivElement>(null)
+  const qrRef = useRef<QRStyledHandle>(null)
 
   const shareUrl = savedId ? `${typeof window !== 'undefined' ? window.location.origin : ''}/k/${savedId}` : ''
 
@@ -219,14 +223,32 @@ export default function HomePage() {
 
               {/* QR Kod */}
               <div style={{ background: 'var(--surface)', borderRadius: 14, padding: '16px', textAlign: 'center', marginBottom: 16, border: '1px solid var(--border)' }}>
-                <div id="qr-code-svg" style={{ display: 'inline-block', background: '#fff', padding: 8 }}>
-                  <QRCode value={shareUrl} size={120} />
+                <p style={{ margin: '0 0 10px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>QR Kod</p>
+                <div style={{ display: 'inline-block', background: '#fff', padding: 8, borderRadius: 10, border: '1px solid var(--border)', marginBottom: 8 }}>
+                  <QRStyled ref={qrRef} value={shareUrl} size={120} dotType={qrShape} />
                 </div>
-                <p style={{ margin: '8px 0 8px', fontSize: 11, color: 'var(--muted)' }}>QR kodu telefonla okut</p>
-                <button onClick={() => downloadQR(shareUrl, `kartvizit-qr.png`)} className="btn-secondary" style={{ fontSize: 12, padding: '7px 14px' }}>
+                {/* QR şekil seçici */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 10 }}>
+                  {([['square', 'Kare'], ['rounded', 'Yuvarlak'], ['dots', 'Nokta']] as [QRDotType, string][]).map(([v, l]) => (
+                    <button key={v} onClick={() => setQrShape(v)}
+                      style={{ padding: '5px 12px', fontSize: 11, fontWeight: qrShape === v ? 600 : 400, borderRadius: 20, border: `1.5px solid ${qrShape === v ? '#2563eb' : 'var(--border)'}`, background: qrShape === v ? 'var(--brand-50)' : '#fff', color: qrShape === v ? 'var(--brand-700)' : 'var(--ink)', cursor: 'pointer', fontFamily: 'inherit' }}>
+                      {l}
+                    </button>
+                  ))}
+                </div>
+                <p style={{ margin: '0 0 8px', fontSize: 11, color: 'var(--muted)' }}>QR kodu telefonla okut</p>
+                <button onClick={() => { const isim = data.values.isim?.replace(/\s+/g, '-').toLowerCase() || 'kartvizit'; qrRef.current?.download(`${isim}-qr`) }} className="btn-secondary" style={{ fontSize: 12, padding: '7px 14px' }}>
                   QR İndir (PNG)
                 </button>
               </div>
+
+              {/* E-posta İmzası */}
+              <button onClick={() => setShowSignature(true)} className="btn-secondary" style={{ width: '100%', fontSize: 13, padding: '11px', marginBottom: 16 }}>
+                ✉️ E-posta İmzası Al
+              </button>
+              {showSignature && (
+                <SignatureModal html={generateSignatureHtml(data, shareUrl)} onClose={() => setShowSignature(false)} />
+              )}
 
               {/* Kaydet butonu */}
               {!claimed ? (

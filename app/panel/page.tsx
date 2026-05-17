@@ -4,6 +4,8 @@ import { CardData } from '@/lib/types'
 import CardPreview from '@/components/CardPreview'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
+import SignatureModal from '@/components/SignatureModal'
+import { generateSignatureHtml } from '@/lib/signatureHtml'
 
 interface SavedCard {
   id: string
@@ -17,6 +19,7 @@ export default function PanelPage() {
   const [deleting, setDeleting] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [userEmail, setUserEmail] = useState('')
+  const [signatureCard, setSignatureCard] = useState<SavedCard | null>(null)
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => { if (!d.user) window.location.href = '/'; else setUserEmail(d.user.email) })
@@ -50,8 +53,16 @@ export default function PanelPage() {
     }
   }
 
+  const cardUrl = (id: string) => `${typeof window !== 'undefined' ? window.location.origin : ''}/k/${id}`
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
+      {signatureCard && (
+        <SignatureModal
+          html={generateSignatureHtml(signatureCard.data, cardUrl(signatureCard.id))}
+          onClose={() => setSignatureCard(null)}
+        />
+      )}
       <Header onAuthClick={() => {}} />
 
       <div className="mobile-padding" style={{ flex: 1, padding: '40px 32px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
@@ -119,13 +130,20 @@ export default function PanelPage() {
                 <div style={{ padding: 18 }}>
                   <CardPreview data={card.data} />
                 </div>
-                <div style={{ borderTop: '1px solid var(--border)', padding: '14px 18px', display: 'flex', gap: 6 }}>
+                <div style={{ borderTop: '1px solid var(--border)', padding: '14px 18px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <a href={`/k/${card.id}`} className="btn-primary" style={{ flex: 1, fontSize: 12, padding: '9px', textDecoration: 'none', textAlign: 'center' }}>
                     Görüntüle
                   </a>
                   <a href={`/duzenle/${card.id}`} className="btn-secondary" style={{ fontSize: 12, padding: '8px 12px', textDecoration: 'none', textAlign: 'center' }}>
                     Düzenle
                   </a>
+                  <button
+                    onClick={() => setSignatureCard(card)}
+                    style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, background: '#fff', color: 'var(--brand-700)', border: '1px solid var(--brand-200)', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit' }}
+                    title="E-posta İmzası"
+                  >
+                    ✉️
+                  </button>
                   <button
                     onClick={() => setConfirmDelete(card.id)}
                     style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, background: '#fff', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit' }}
