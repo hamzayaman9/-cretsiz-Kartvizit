@@ -33,8 +33,9 @@ export interface CardData {
     github: string
     youtube: string
   }
-  profilFoto: string | null   // base64 veya URL
+  profilFoto: string | null
   arkaplanFoto: string | null
+  accentColor?: string
 }
 
 export const defaultCardData: CardData = {
@@ -70,4 +71,5 @@ export const defaultCardData: CardData = {
   },
   profilFoto: null,
   arkaplanFoto: null,
+  accentColor: '',
 }

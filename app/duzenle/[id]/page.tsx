@@ -30,6 +30,7 @@ export default function EditPage() {
   const updateField = useCallback((key: keyof CardData['fields'], value: boolean) => setData(d => ({ ...d, fields: { ...d.fields, [key]: value } })), [])
   const updateValue = useCallback((key: keyof CardData['values'], value: string) => setData(d => ({ ...d, values: { ...d.values, [key]: value } })), [])
   const setTemplate = useCallback((t: TemplateId) => setData(d => ({ ...d, template: t })), [])
+  const setAccentColor = useCallback((c: string) => setData(d => ({ ...d, accentColor: c })), [])
 
   const handleSave = async () => {
     setSaving(true)
@@ -50,7 +51,7 @@ export default function EditPage() {
           <PhotoUpload label="Arka plan fotoğrafı" value={data.arkaplanFoto} onChange={v => setData(d => ({ ...d, arkaplanFoto: v }))} hint="Kapak & Gece şablonlarında görünür" />
         </div>
       )
-      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} />
+      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} accentColor={data.accentColor} onColorChange={setAccentColor} />
     }
   }
 

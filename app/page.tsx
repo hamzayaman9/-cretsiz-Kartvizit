@@ -6,6 +6,8 @@ import ValuesForm from '@/components/ValuesForm'
 import CardPreview from '@/components/CardPreview'
 import TemplatePicker from '@/components/TemplatePicker'
 import PhotoUpload from '@/components/PhotoUpload'
+import QRCode from 'react-qr-code'
+import { downloadQR } from '@/lib/downloads'
 import StepIndicator from '@/components/StepIndicator'
 import AuthModal from '@/components/AuthModal'
 import Footer from '@/components/Footer'
@@ -39,6 +41,7 @@ export default function HomePage() {
   const updateField = useCallback((key: keyof CardData['fields'], value: boolean) => setData(d => ({ ...d, fields: { ...d.fields, [key]: value } })), [])
   const updateValue = useCallback((key: keyof CardData['values'], value: string) => setData(d => ({ ...d, values: { ...d.values, [key]: value } })), [])
   const setTemplate = useCallback((t: TemplateId) => setData(d => ({ ...d, template: t })), [])
+  const setAccentColor = useCallback((c: string) => setData(d => ({ ...d, accentColor: c })), [])
 
   const handleCreate = async () => {
     setSaving(true)
@@ -112,7 +115,7 @@ export default function HomePage() {
           <PhotoUpload label="Arka plan fotoğrafı" value={data.arkaplanFoto} onChange={v => setData(d => ({ ...d, arkaplanFoto: v }))} hint="Kapak & Gece şablonlarında görünür" />
         </div>
       )
-      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} />
+      case 4: return <TemplatePicker selected={data.template} onChange={setTemplate} accentColor={data.accentColor} onColorChange={setAccentColor} />
     }
   }
 
@@ -210,6 +213,17 @@ export default function HomePage() {
               <a href={`/k/${savedId}`} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ display: 'block', textAlign: 'center', textDecoration: 'none', fontSize: 14, padding: '11px', marginBottom: 16 }}>
                 Kartviziti görüntüle ↗
               </a>
+
+              {/* QR Kod */}
+              <div style={{ background: 'var(--surface)', borderRadius: 14, padding: '16px', textAlign: 'center', marginBottom: 16, border: '1px solid var(--border)' }}>
+                <div id="qr-code-svg" style={{ display: 'inline-block', background: '#fff', padding: 8 }}>
+                  <QRCode value={shareUrl} size={120} />
+                </div>
+                <p style={{ margin: '8px 0 8px', fontSize: 11, color: 'var(--muted)' }}>QR kodu telefonla okut</p>
+                <button onClick={() => downloadQR(shareUrl, `kartvizit-qr.png`)} className="btn-secondary" style={{ fontSize: 12, padding: '7px 14px' }}>
+                  QR İndir (PNG)
+                </button>
+              </div>
 
               {/* Kaydet butonu */}
               {!claimed ? (

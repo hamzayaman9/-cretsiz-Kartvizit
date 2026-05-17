@@ -63,7 +63,7 @@ export default function CardPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
-      <header className="mobile-header" style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
+      <header className="mobile-header no-print" style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
@@ -83,32 +83,50 @@ export default function CardPage() {
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '32px 16px' }}>
         <div style={{ width: '100%', maxWidth: 480 }} className="fade-up">
-          <CardPreview data={card} />
+          <div className="print-card"><CardPreview data={card} /></div>
 
           {/* Aksiyon butonları */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
+          <div className="no-print" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
             <button onClick={handleCopy} className="btn-primary" style={{ fontSize: 13, padding: '12px' }}>
               {copied ? '✓ Kopyalandı' : '🔗 Linki kopyala'}
             </button>
             <button onClick={handleVCardDownload} className="btn-secondary" style={{ fontSize: 13, padding: '11px' }}>
               📇 Rehbere ekle
             </button>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent('Kartvizitimi gör: ' + url)}`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#25d366', color: '#fff', borderRadius: 12, fontSize: 13, padding: '12px', fontWeight: 600, textDecoration: 'none' }}
+            >
+              WhatsApp
+            </a>
+            <a
+              href={`sms:?body=${encodeURIComponent('Kartvizitimi gör: ' + url)}`}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#fff', color: 'var(--brand-700)', border: '1.5px solid var(--brand-200)', borderRadius: 12, fontSize: 13, padding: '11px', fontWeight: 600, textDecoration: 'none' }}
+            >
+              SMS ile gönder
+            </a>
           </div>
 
           {/* QR kod kartı - her zaman göster */}
-          <div style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
+          <div className="no-print" style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
             <div id="qr-code-svg" style={{ display: 'inline-block', background: '#fff', padding: 8 }}>
               <QRCode value={url} size={160} />
             </div>
             <p style={{ margin: '12px 0 12px', fontSize: 12, color: 'var(--muted)' }}>
               QR kodu telefonla okutarak kartvizite ulaş
             </p>
-            <button onClick={handleQRDownload} className="btn-secondary" style={{ fontSize: 13, padding: '10px 20px' }}>
-              ⬇️ QR kodu indir (PNG)
-            </button>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={handleQRDownload} className="btn-secondary" style={{ fontSize: 13, padding: '10px 20px' }}>
+                QR İndir (PNG)
+              </button>
+              <button onClick={() => window.print()} className="btn-secondary" style={{ fontSize: 13, padding: '10px 20px' }}>
+                PDF Kaydet
+              </button>
+            </div>
           </div>
 
-          <div style={{ marginTop: 24, textAlign: 'center' }}>
+          <div className="no-print" style={{ marginTop: 24, textAlign: 'center' }}>
             <a href="/" style={{ fontSize: 13, color: 'var(--brand-700)', textDecoration: 'none', fontWeight: 500 }}>
               Sen de ücretsiz kartvizit oluştur →
             </a>

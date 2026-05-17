@@ -123,3 +123,9 @@ input, textarea, button { font-family: var(--font-body); }
 @media (max-width: 768px) {
   .mobile-bottom-preview { display: block !important; }
 }
+
+@media print {
+  header, footer, .no-print { display: none !important; }
+  body { background: #fff !important; }
+  .print-card { break-inside: avoid; box-shadow: none !important; }
+}

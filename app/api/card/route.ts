@@ -15,8 +15,12 @@ function sanitize(str: string, max = 500): string {
 
 function isSafeImageUrl(value: unknown): value is string {
   if (typeof value !== 'string' || value.length > 2000) return false
-  // Sadece Supabase storage URL'lerine izin ver
   return value.startsWith('https://')
+}
+
+function isSafeColor(value: unknown): value is string {
+  if (typeof value !== 'string') return false
+  return /^#[0-9a-fA-F]{6}$/.test(value)
 }
 
 function sanitizeCard(data: any): CardData | null {
@@ -58,6 +62,7 @@ function sanitizeCard(data: any): CardData | null {
     },
     profilFoto: isSafeImageUrl(data.profilFoto) ? data.profilFoto : null,
     arkaplanFoto: isSafeImageUrl(data.arkaplanFoto) ? data.arkaplanFoto : null,
+    accentColor: isSafeColor(data.accentColor) ? data.accentColor : '',
   }
   return clean
 }

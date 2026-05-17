@@ -14,12 +14,25 @@ const templates: { id: TemplateId; label: string; desc: string }[] = [
   { id: 'mozaik',    label: 'Mozaik',    desc: 'Bloklu modern grid' },
 ]
 
+const PRESET_COLORS = [
+  { value: '#2563eb', label: 'Mavi' },
+  { value: '#7c3aed', label: 'Mor' },
+  { value: '#dc2626', label: 'Kırmızı' },
+  { value: '#d97706', label: 'Turuncu' },
+  { value: '#16a34a', label: 'Yeşil' },
+  { value: '#0891b2', label: 'Turkuaz' },
+  { value: '#374151', label: 'Koyu gri' },
+  { value: '#111827', label: 'Siyah' },
+]
+
 interface Props {
   selected: TemplateId
   onChange: (id: TemplateId) => void
+  accentColor?: string
+  onColorChange?: (color: string) => void
 }
 
-export default function TemplatePicker({ selected, onChange }: Props) {
+export default function TemplatePicker({ selected, onChange, accentColor = '', onColorChange }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       {templates.map(t => (
@@ -55,6 +68,50 @@ export default function TemplatePicker({ selected, onChange }: Props) {
           )}
         </button>
       ))}
+
+      {onColorChange && (
+        <div style={{ marginTop: 12, padding: '14px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>
+          <p style={{ margin: '0 0 10px', fontSize: 12, fontWeight: 600, color: 'var(--ink-soft)' }}>Vurgu rengi</p>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+            {PRESET_COLORS.map(c => (
+              <button
+                key={c.value}
+                title={c.label}
+                onClick={() => onColorChange(c.value)}
+                style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: c.value,
+                  border: accentColor === c.value ? '2.5px solid var(--ink)' : '2px solid transparent',
+                  outline: accentColor === c.value ? '2px solid #fff' : 'none',
+                  outlineOffset: '-3px',
+                  cursor: 'pointer',
+                  padding: 0,
+                  transition: 'transform 0.1s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')}
+                onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+              />
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="color"
+              value={accentColor || '#2563eb'}
+              onChange={e => onColorChange(e.target.value)}
+              style={{ width: 32, height: 32, border: 'none', padding: 0, cursor: 'pointer', borderRadius: 6, background: 'none' }}
+            />
+            <span style={{ fontSize: 11, color: 'var(--muted)' }}>Özel renk seç</span>
+            {accentColor && (
+              <button
+                onClick={() => onColorChange('')}
+                style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+              >
+                Sıfırla
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
