@@ -6,6 +6,8 @@ import QRStyled, { QRDotType, QRStyledHandle } from '@/components/QRStyled'
 import Footer from '@/components/Footer'
 import LogoText from '@/components/LogoText'
 import { downloadVCard } from '@/lib/downloads'
+import { generateSignatureHtml } from '@/lib/signatureHtml'
+import SignatureModal from '@/components/SignatureModal'
 
 const QR_SHAPES: { type: QRDotType; label: string; preview: string }[] = [
   { type: 'square',  label: 'Kare',    preview: '▪▪▪' },
@@ -20,6 +22,7 @@ export default function CardPage() {
   const [isOwner, setIsOwner] = useState(false)
   const [qrShape, setQrShape] = useState<QRDotType>('square')
   const [showName, setShowName] = useState(false)
+  const [showSignature, setShowSignature] = useState(false)
   const url = typeof window !== 'undefined' ? window.location.href : ''
   const [cardId, setCardId] = useState('')
   const qrRef = useRef<QRStyledHandle>(null)
@@ -72,6 +75,9 @@ export default function CardPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
+      {showSignature && card && (
+        <SignatureModal html={generateSignatureHtml(card, url)} onClose={() => setShowSignature(false)} />
+      )}
       <header className="mobile-header no-print" style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -115,6 +121,12 @@ export default function CardPage() {
             >
               SMS ile gönder
             </a>
+            <button
+              onClick={() => setShowSignature(true)}
+              style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#fff', color: '#7c3aed', border: '1.5px solid #e9d5ff', borderRadius: 12, fontSize: 13, padding: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              ✉️ E-posta İmzası Al
+            </button>
           </div>
 
           {/* QR Kod */}
