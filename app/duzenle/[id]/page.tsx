@@ -108,7 +108,7 @@ export default function EditPage() {
                 <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Canlı önizleme</p>
                 <CardPreview data={data} />
               </div>
-              <StyleBar accentColor={data.accentColor || ''} onColorChange={setAccentColor} cardStyle={data.cardStyle || {}} onStyleChange={setCardStyle} />
+              <StyleBar accentColor={data.accentColor || ''} onColorChange={setAccentColor} cardStyle={data.cardStyle || {}} onStyleChange={setCardStyle} templateId={data.template} />
             </div>
           </div>
         </div>

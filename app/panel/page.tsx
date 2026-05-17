@@ -16,11 +16,17 @@ export default function PanelPage() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(d => { if (!d.user) window.location.href = '/' })
+    fetch('/api/auth/me').then(r => r.json()).then(d => { if (!d.user) window.location.href = '/'; else setUserEmail(d.user.email) })
     loadCards()
   }, [])
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/me', { method: 'DELETE' })
+    window.location.href = '/'
+  }
 
   const loadCards = () => {
     fetch('/api/user/cards').then(r => r.json()).then(d => { setCards(d.cards || []); setLoading(false) }).catch(() => setLoading(false))
@@ -56,9 +62,15 @@ export default function PanelPage() {
               Kartlarım
             </h1>
           </div>
-          <a href="/" className="btn-primary" style={{ fontSize: 14, textDecoration: 'none', display: 'inline-block' }}>
-            + Yeni kart oluştur
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {userEmail && <span style={{ fontSize: 12, color: 'var(--muted)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</span>}
+            <button onClick={handleLogout} style={{ fontSize: 13, color: 'var(--muted)', background: '#fff', border: '1px solid var(--border)', borderRadius: 10, cursor: 'pointer', padding: '9px 14px', fontFamily: 'inherit' }}>
+              Çıkış Yap
+            </button>
+            <a href="/" className="btn-primary" style={{ fontSize: 14, textDecoration: 'none', display: 'inline-block' }}>
+              + Yeni kart
+            </a>
+          </div>
         </div>
 
         {loading ? (

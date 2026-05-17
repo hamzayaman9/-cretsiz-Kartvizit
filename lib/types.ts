@@ -10,6 +10,10 @@ export interface CardStyle {
   bgColor?: string
   bgGradient?: string
   textColor?: string
+  accentColor?: string
+  mutedColor?: string
+  headerBg?: string
+  sidebarBg?: string
   borderRadius?: BorderRadius
   fontSize?: FontSize
   layout?: Layout

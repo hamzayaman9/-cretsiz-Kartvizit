@@ -34,12 +34,15 @@ export default function ConfigurableTemplate({ data, config: baseConfig }: Props
   // Merge data overrides into config
   const c: TemplateConfig = {
     ...baseConfig,
-    accentColor: data.accentColor || baseConfig.accentColor,
+    accentColor: cs.accentColor || data.accentColor || baseConfig.accentColor,
     fontFamily: (cs.fontFamily as TemplateConfig['fontFamily']) || baseConfig.fontFamily,
     borderRadius: cs.borderRadius != null ? (radiusMap[cs.borderRadius] ?? baseConfig.borderRadius) : baseConfig.borderRadius,
     bg: cs.bgColor || baseConfig.bg,
     bgGradient: cs.bgGradient || baseConfig.bgGradient,
     textColor: cs.textColor || baseConfig.textColor,
+    mutedColor: cs.mutedColor || baseConfig.mutedColor,
+    headerBg: cs.headerBg || baseConfig.headerBg,
+    sidebarBg: cs.sidebarBg || baseConfig.sidebarBg,
   }
 
   const font = fontStyle(c.fontFamily)

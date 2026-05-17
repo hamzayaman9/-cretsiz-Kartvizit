@@ -21,6 +21,10 @@ function sanitizeCardStyle(style: any): CardStyle {
   if (VALID_LAYOUTS.includes(style.layout)) out.layout = style.layout
   if (isSafeColor(style.bgColor)) out.bgColor = style.bgColor
   if (isSafeColor(style.textColor)) out.textColor = style.textColor
+  if (isSafeColor(style.accentColor)) out.accentColor = style.accentColor
+  if (isSafeColor(style.mutedColor)) out.mutedColor = style.mutedColor
+  if (isSafeColor(style.headerBg)) out.headerBg = style.headerBg
+  if (isSafeColor(style.sidebarBg)) out.sidebarBg = style.sidebarBg
   if (typeof style.bgGradient === 'string' && style.bgGradient.length < 200 && /^linear-gradient\(/.test(style.bgGradient)) {
     out.bgGradient = style.bgGradient
   }

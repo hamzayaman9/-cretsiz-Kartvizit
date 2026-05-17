@@ -184,7 +184,7 @@ export default function HomePage() {
                   </p>
                   <CardPreview data={data} />
                 </div>
-                <StyleBar accentColor={data.accentColor || ''} onColorChange={setAccentColor} cardStyle={data.cardStyle || {}} onStyleChange={setCardStyle} />
+                <StyleBar accentColor={data.accentColor || ''} onColorChange={setAccentColor} cardStyle={data.cardStyle || {}} onStyleChange={setCardStyle} templateId={data.template} />
               </div>
             </div>
           </div>
