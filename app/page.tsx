@@ -95,6 +95,7 @@ export default function HomePage() {
     setUser({ email })
     setShowAuth(false)
     setShowAuthForSave(false)
+    window.dispatchEvent(new Event('auth:changed'))
     // Eğer kart oluşturduysa otomatik bağla
     if (savedId && !claimed) {
       await handleClaim()

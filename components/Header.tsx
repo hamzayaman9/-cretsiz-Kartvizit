@@ -11,11 +11,17 @@ export default function Header({ onAuthClick }: Props) {
   const [user, setUser] = useState<{ email: string } | null>(null)
   const [scrolled, setScrolled] = useState(false)
 
+  const fetchUser = () => fetch('/api/auth/me').then(r => r.json()).then(d => { if (d.user) setUser(d.user); else setUser(null) })
+
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(d => { if (d.user) setUser(d.user) })
+    fetchUser()
     const onScroll = () => setScrolled(window.scrollY > 10)
     window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('auth:changed', fetchUser)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('auth:changed', fetchUser)
+    }
   }, [])
 
   const handleLogout = async () => {

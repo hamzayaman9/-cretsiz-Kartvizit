@@ -72,11 +72,16 @@ export default function CardPage() {
           <LogoIcon size={36} />
           <LogoText size={16} />
         </a>
-        {isOwner && (
-          <a href={`/duzenle/${cardId}`} className="btn-primary" style={{ fontSize: 13, padding: '9px 18px', textDecoration: 'none', display: 'inline-block' }}>
-            ✏️ Düzenle
-          </a>
-        )}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button onClick={() => window.history.back()} style={{ fontSize: 13, padding: '9px 14px', background: '#fff', border: '1px solid var(--border)', borderRadius: 10, cursor: 'pointer', color: 'var(--muted)', fontFamily: 'inherit' }}>
+            ← Geri
+          </button>
+          {isOwner && (
+            <a href={`/duzenle/${cardId}`} className="btn-primary" style={{ fontSize: 13, padding: '9px 18px', textDecoration: 'none', display: 'inline-block' }}>
+              ✏️ Düzenle
+            </a>
+          )}
+        </div>
       </header>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '32px 16px' }}>
