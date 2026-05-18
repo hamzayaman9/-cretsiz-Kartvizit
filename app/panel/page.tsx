@@ -11,6 +11,7 @@ interface SavedCard {
   id: string
   data: CardData
   created_at: string
+  viewCount: number
 }
 
 export default function PanelPage() {
@@ -129,6 +130,12 @@ export default function PanelPage() {
                 )}
                 <div style={{ padding: 18 }}>
                   <CardPreview data={card.data} />
+                </div>
+                <div style={{ padding: '8px 18px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 14 }}>👁️</span>
+                  <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 500 }}>
+                    {card.viewCount} kişi gördü
+                  </span>
                 </div>
                 <div style={{ borderTop: '1px solid var(--border)', padding: '14px 18px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <a href={`/k/${card.id}`} className="btn-primary" style={{ flex: 1, fontSize: 12, padding: '9px', textDecoration: 'none', textAlign: 'center' }}>

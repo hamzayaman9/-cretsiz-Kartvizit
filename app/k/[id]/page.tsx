@@ -23,6 +23,8 @@ export default function CardPage() {
     setCardId(id)
     if (!id) return
     fetch(`/api/card?id=${id}`).then(r => r.json()).then(d => { if (d.error) setError(true); else setCard(d) }).catch(() => setError(true))
+    // Görüntülenme kaydet (fire & forget)
+    fetch(`/api/card/view?id=${id}`, { method: 'POST' }).catch(() => {})
     fetch('/api/auth/me').then(r => r.json()).then(async me => {
       if (!me.user) return
       const res = await fetch('/api/user/cards')

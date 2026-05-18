@@ -17,5 +17,21 @@ export async function GET(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  return NextResponse.json({ cards: data || [] })
+  const cards = data || []
+
+  // Her kart için görüntülenme sayısını çek
+  const viewCounts = await Promise.all(
+    cards.map(async (card) => {
+      const { count } = await supabase
+        .from('card_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('card_id', card.id)
+      return { id: card.id, count: count ?? 0 }
+    })
+  )
+
+  const viewMap = Object.fromEntries(viewCounts.map(v => [v.id, v.count]))
+  const cardsWithViews = cards.map(c => ({ ...c, viewCount: viewMap[c.id] ?? 0 }))
+
+  return NextResponse.json({ cards: cardsWithViews })
 }
