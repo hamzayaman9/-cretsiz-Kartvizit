@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 20 upload / saat / IP
     const key = `upload:${getClientKey(req)}`
-    const limit = checkRateLimit(key, 20, 60 * 60 * 1000)
+    const limit = await checkRateLimit(key, 20, 60 * 60 * 1000)
     if (!limit.allowed) {
       const mins = Math.ceil((limit.remainingMs || 0) / 60000)
       return NextResponse.json({ error: `Çok fazla yükleme, ${mins} dakika sonra dene` }, { status: 429 })

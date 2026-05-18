@@ -11,7 +11,7 @@ function generateCode(): string {
 export async function POST(req: NextRequest) {
   try {
     const key = `verify-send:${getClientKey(req)}`
-    const limit = checkRateLimit(key, 3, 15 * 60 * 1000)
+    const limit = await checkRateLimit(key, 3, 15 * 60 * 1000)
     if (!limit.allowed) {
       return NextResponse.json({ error: 'Çok fazla deneme, biraz bekle' }, { status: 429 })
     }
@@ -46,7 +46,7 @@ export async function PUT(req: NextRequest) {
 
     // Brute-force koruması: 5 hatalı deneme / 15 dakika / email
     const codeKey = `verify-code:${String(email).toLowerCase()}`
-    const codeLimit = checkRateLimit(codeKey, 5, 15 * 60 * 1000)
+    const codeLimit = await checkRateLimit(codeKey, 5, 15 * 60 * 1000)
     if (!codeLimit.allowed) {
       const mins = Math.ceil((codeLimit.remainingMs || 0) / 60000)
       return NextResponse.json({ error: `Çok fazla hatalı deneme, ${mins} dakika sonra tekrar dene` }, { status: 429 })

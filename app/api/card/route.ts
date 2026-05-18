@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 10 kart / saat / IP (spam koruması)
     const key = `card:${getClientKey(req)}`
-    const limit = checkRateLimit(key, 10, 60 * 60 * 1000)
+    const limit = await checkRateLimit(key, 10, 60 * 60 * 1000)
     if (!limit.allowed) {
       const mins = Math.ceil((limit.remainingMs || 0) / 60000)
       return NextResponse.json({ error: `Çok fazla kart oluşturdun, ${mins} dakika sonra dene` }, { status: 429 })
@@ -167,7 +167,7 @@ export async function PUT(req: NextRequest) {
 
     // Rate limit: 30 update / saat / kullanıcı
     const key = `update:${payload.userId}`
-    const limit = checkRateLimit(key, 30, 60 * 60 * 1000)
+    const limit = await checkRateLimit(key, 30, 60 * 60 * 1000)
     if (!limit.allowed) {
       return NextResponse.json({ error: 'Çok fazla güncelleme, biraz bekle' }, { status: 429 })
     }

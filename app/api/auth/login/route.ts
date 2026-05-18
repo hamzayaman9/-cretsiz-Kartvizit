@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 10 login deneme / 15 dakika / IP (brute force koruması)
     const ipKey = `login:${getClientKey(req)}`
-    const limit = checkRateLimit(ipKey, 10, 15 * 60 * 1000)
+    const limit = await checkRateLimit(ipKey, 10, 15 * 60 * 1000)
     if (!limit.allowed) {
       const mins = Math.ceil((limit.remainingMs || 0) / 60000)
       return NextResponse.json({ error: `Çok fazla deneme, ${mins} dakika sonra dene` }, { status: 429 })
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     // Email başına da rate limit (target user enumeration koruması)
     const emailKey = `login:email:${email.toLowerCase()}`
-    const emailLimit = checkRateLimit(emailKey, 5, 15 * 60 * 1000)
+    const emailLimit = await checkRateLimit(emailKey, 5, 15 * 60 * 1000)
     if (!emailLimit.allowed) {
       const mins = Math.ceil((emailLimit.remainingMs || 0) / 60000)
       return NextResponse.json({ error: `Bu hesap için çok fazla deneme, ${mins} dakika sonra dene` }, { status: 429 })

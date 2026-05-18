@@ -56,13 +56,13 @@ export async function POST(req: NextRequest) {
     const clientKey = getClientKey(req)
 
     // Dakika bazlı sıkı limit (burst koruması)
-    const burstLimit = checkRateLimit(`asistan:burst:${clientKey}`, 5, 60 * 1000)
+    const burstLimit = await checkRateLimit(`asistan:burst:${clientKey}`, 5, 60 * 1000)
     if (!burstLimit.allowed) {
       return NextResponse.json({ error: 'Çok hızlı istek gönderiyorsun, biraz bekle' }, { status: 429 })
     }
 
     // Saatlik limit
-    const hourLimit = checkRateLimit(`asistan:hour:${clientKey}`, 20, 60 * 60 * 1000)
+    const hourLimit = await checkRateLimit(`asistan:hour:${clientKey}`, 20, 60 * 60 * 1000)
     if (!hourLimit.allowed) {
       return NextResponse.json({ error: 'Saatlik istek limitine ulaştın, 1 saat sonra dene' }, { status: 429 })
     }

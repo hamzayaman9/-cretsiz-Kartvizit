@@ -7,7 +7,7 @@ import { randomBytes } from 'crypto'
 export async function POST(req: NextRequest) {
   try {
     const key = `forgot:${getClientKey(req)}`
-    const limit = checkRateLimit(key, 3, 60 * 60 * 1000)
+    const limit = await checkRateLimit(key, 3, 60 * 60 * 1000)
     if (!limit.allowed) {
       return NextResponse.json({ error: 'Çok fazla deneme, 1 saat sonra dene' }, { status: 429 })
     }

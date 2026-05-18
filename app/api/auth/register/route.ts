@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 5 register / saat / IP
     const key = `register:${getClientKey(req)}`
-    const limit = checkRateLimit(key, 5, 60 * 60 * 1000)
+    const limit = await checkRateLimit(key, 5, 60 * 60 * 1000)
     if (!limit.allowed) {
       const mins = Math.ceil((limit.remainingMs || 0) / 60000)
       return NextResponse.json({ error: `Çok fazla deneme, ${mins} dakika sonra dene` }, { status: 429 })

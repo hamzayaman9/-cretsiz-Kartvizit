@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 5 deneme / 15 dakika / IP
     const key = `reset-password:${getClientKey(req)}`
-    const limit = checkRateLimit(key, 5, 15 * 60 * 1000)
+    const limit = await checkRateLimit(key, 5, 15 * 60 * 1000)
     if (!limit.allowed) {
       const mins = Math.ceil((limit.remainingMs || 0) / 60000)
       return NextResponse.json({ error: `Çok fazla deneme, ${mins} dakika sonra tekrar dene` }, { status: 429 })
