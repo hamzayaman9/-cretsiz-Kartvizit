@@ -75,8 +75,8 @@ export default function Header({ onAuthClick }: Props) {
               Kartlarım
             </a>
             <button onClick={handleLogout} className="desktop-only" style={{
-              fontSize: 13, color: 'var(--muted)', background: 'none',
-              border: 'none', cursor: 'pointer', padding: '9px 12px',
+              fontSize: 13, color: '#dc2626', background: '#fff',
+              border: '1.5px solid #fecaca', borderRadius: 10, cursor: 'pointer', padding: '9px 12px',
             }}>
               Çıkış
             </button>

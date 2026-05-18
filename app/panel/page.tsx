@@ -76,7 +76,7 @@ export default function PanelPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {userEmail && <span style={{ fontSize: 12, color: 'var(--muted)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</span>}
-            <button onClick={handleLogout} style={{ fontSize: 13, color: 'var(--muted)', background: '#fff', border: '1px solid var(--border)', borderRadius: 10, cursor: 'pointer', padding: '9px 14px', fontFamily: 'inherit' }}>
+            <button onClick={handleLogout} style={{ fontSize: 13, color: '#dc2626', background: '#fff', border: '1.5px solid #fecaca', borderRadius: 10, cursor: 'pointer', padding: '9px 14px', fontFamily: 'inherit', fontWeight: 600 }}>
               Çıkış Yap
             </button>
             <a href="/" className="btn-primary" style={{ fontSize: 14, textDecoration: 'none', display: 'inline-block' }}>

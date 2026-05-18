@@ -21,6 +21,7 @@ export default function Footer() {
           <div style={{ display: 'flex', gap: 24, fontSize: 13 }}>
             <a href="/" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Ana sayfa</a>
             <a href="/panel" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Kartlarım</a>
+            <a href="/siparis" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>NFC Kart</a>
             <a href="#nasil-calisir" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Özellikler</a>
           </div>
         </div>
