@@ -69,6 +69,14 @@ export default function CardPage() {
     }).catch(() => {})
   }, [])
 
+  // Body arka planını kart rengine göre ayarla (hook early return'den önce olmalı)
+  useEffect(() => {
+    if (!card) return
+    const { bg } = getPageBg(card)
+    document.body.style.background = bg
+    return () => { document.body.style.background = '' }
+  }, [card])
+
   const handleCopy = () => {
     navigator.clipboard.writeText(url)
     setCopied(true)
@@ -101,12 +109,6 @@ export default function CardPage() {
   )
 
   const { bg, glow } = getPageBg(card)
-
-  // Body arka planını kart rengine göre ayarla
-  useEffect(() => {
-    document.body.style.background = bg
-    return () => { document.body.style.background = '' }
-  }, [bg])
 
   return (
     <div style={{ minHeight: '100vh', background: bg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 16px' }}>
