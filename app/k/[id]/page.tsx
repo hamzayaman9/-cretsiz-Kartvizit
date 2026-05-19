@@ -102,6 +102,12 @@ export default function CardPage() {
 
   const { bg, glow } = getPageBg(card)
 
+  // Body arka planını kart rengine göre ayarla
+  useEffect(() => {
+    document.body.style.background = bg
+    return () => { document.body.style.background = '' }
+  }, [bg])
+
   return (
     <div style={{ minHeight: '100vh', background: bg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 16px' }}>
 
