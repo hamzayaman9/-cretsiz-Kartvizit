@@ -1,6 +1,6 @@
 {
-  "name": "Kartvizitim - Dijital Kartvizit",
-  "short_name": "Kartvizitim",
+  "name": "Kartivizitim - Dijital Kartvizit",
+  "short_name": "Kartivizitim",
   "description": "Ücretsiz dijital kartvizit oluşturucu",
   "start_url": "/",
   "display": "standalone",

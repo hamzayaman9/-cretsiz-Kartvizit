@@ -33,7 +33,7 @@ export function generateSignatureHtml(data: CardData, cardUrl: string): string {
   }
   if (address) rows.push(`<tr><td style="padding:1px 0;font-size:12px;color:#6b7280;">📍 ${address}</td></tr>`)
 
-  rows.push(`<tr><td style="padding-top:8px;font-size:11px;"><a href="${cardUrl}" style="color:#9ca3af;text-decoration:none;">🪪 Dijital kartvizitimi görüntüle →</a></td></tr>`)
+  rows.push(`<tr><td style="padding-top:8px;font-size:11px;"><a href="${cardUrl}" style="color:#9ca3af;text-decoration:none;">🪪 Dijital kartivizitimi görüntüle →</a></td></tr>`)
 
   return `<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;max-width:480px;">
   <tr>

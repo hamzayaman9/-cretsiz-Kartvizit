@@ -97,14 +97,14 @@ export default function CardPage() {
               📇 Rehbere ekle
             </button>
             <a
-              href={`https://wa.me/?text=${encodeURIComponent('Kartvizitimi gör: ' + url)}`}
+              href={`https://wa.me/?text=${encodeURIComponent('Kartivizitimi gör: ' + url)}`}
               target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#25d366', color: '#fff', borderRadius: 12, fontSize: 13, padding: '12px', fontWeight: 600, textDecoration: 'none' }}
             >
               WhatsApp
             </a>
             <a
-              href={`sms:?body=${encodeURIComponent('Kartvizitimi gör: ' + url)}`}
+              href={`sms:?body=${encodeURIComponent('Kartivizitimi gör: ' + url)}`}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', color: 'var(--brand-700)', border: '1.5px solid var(--brand-200)', borderRadius: 12, fontSize: 13, padding: '11px', fontWeight: 600, textDecoration: 'none' }}
             >
               SMS ile gönder

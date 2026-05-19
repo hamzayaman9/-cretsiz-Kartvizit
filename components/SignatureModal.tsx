@@ -17,7 +17,7 @@ const GUIDES: Record<string, { step: string; desc: string }[]> = {
   gmail: [
     { step: '1', desc: 'Gmail\'i aç → Sağ üstten ⚙️ simgesine tıkla → "Tüm ayarları gör"' },
     { step: '2', desc: '"Genel" sekmesinde "İmza" bölümünü bul → "+ Yeni oluştur" tıkla' },
-    { step: '3', desc: 'İmzana bir isim ver (örn. "Kartvizitim") → Oluştur' },
+    { step: '3', desc: 'İmzana bir isim ver (örn. "Kartivizitim") → Oluştur' },
     { step: '4', desc: '"Önizleme" sekmesine dön → "📋 İmzayı Kopyala" butonuna bas' },
     { step: '5', desc: 'Gmail imza kutusunun içine tıkla → Ctrl+V (Mac: Cmd+V) ile yapıştır' },
     { step: '6', desc: 'Sayfanın en altındaki "Değişiklikleri kaydet" butonuna bas ✅' },

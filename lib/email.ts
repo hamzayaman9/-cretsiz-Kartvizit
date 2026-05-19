@@ -1,18 +1,18 @@
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Kartvizitim <noreply@kartivizitim.com.tr>'
+const FROM = 'Kartivizitim <noreply@kartivizitim.com.tr>'
 const SITE = 'https://kartivizitim.com.tr'
 
 export async function sendVerificationEmail(email: string, code: string) {
   return resend.emails.send({
     from: FROM,
     to: email,
-    subject: 'Email adresini doğrula — Kartvizitim',
+    subject: 'Email adresini doğrula — Kartivizitim',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
         <div style="text-align: center; margin-bottom: 32px;">
-          <h1 style="font-size: 24px; color: #1e3a8a; margin: 0;">Kartvizitim</h1>
+          <h1 style="font-size: 24px; color: #1e3a8a; margin: 0;">Kartivizitim</h1>
           <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">Profesyonel Dijital Kartvizit</p>
         </div>
         
@@ -34,7 +34,7 @@ export async function sendVerificationEmail(email: string, code: string) {
         
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
         <p style="color: #cbd5e1; font-size: 12px; text-align: center; margin: 0;">
-          © ${new Date().getFullYear()} Kartvizitim — <a href="${SITE}" style="color: #94a3b8;">${SITE}</a>
+          © ${new Date().getFullYear()} Kartivizitim — <a href="${SITE}" style="color: #94a3b8;">${SITE}</a>
         </p>
       </div>
     `,
@@ -46,11 +46,11 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   return resend.emails.send({
     from: FROM,
     to: email,
-    subject: 'Şifre sıfırlama — Kartvizitim',
+    subject: 'Şifre sıfırlama — Kartivizitim',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
         <div style="text-align: center; margin-bottom: 32px;">
-          <h1 style="font-size: 24px; color: #1e3a8a; margin: 0;">Kartvizitim</h1>
+          <h1 style="font-size: 24px; color: #1e3a8a; margin: 0;">Kartivizitim</h1>
           <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">Profesyonel Dijital Kartvizit</p>
         </div>
         
@@ -78,7 +78,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
         
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
         <p style="color: #cbd5e1; font-size: 12px; text-align: center; margin: 0;">
-          © ${new Date().getFullYear()} Kartvizitim — <a href="${SITE}" style="color: #94a3b8;">${SITE}</a>
+          © ${new Date().getFullYear()} Kartivizitim — <a href="${SITE}" style="color: #94a3b8;">${SITE}</a>
         </p>
       </div>
     `,

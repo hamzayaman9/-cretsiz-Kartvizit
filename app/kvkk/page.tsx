@@ -1,7 +1,7 @@
 import Footer from '@/components/Footer'
 
 export const metadata = {
-  title: 'KVKK Aydınlatma Metni — Kartvizitim',
+  title: 'KVKK Aydınlatma Metni — Kartivizitim',
   description: 'Kişisel Verilerin Korunması Kanunu kapsamında aydınlatma metni',
 }
 

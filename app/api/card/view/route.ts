@@ -4,7 +4,7 @@ import { createHash } from 'crypto'
 import { getClientKey } from '@/lib/rateLimit'
 
 function hashIp(ip: string): string {
-  return createHash('sha256').update(ip + 'kartvizitim-salt').digest('hex').slice(0, 32)
+  return createHash('sha256').update(ip + 'kartivizitim-salt').digest('hex').slice(0, 32)
 }
 
 // POST /api/card/view?id=xxx — görüntülenme kaydet

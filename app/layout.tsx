@@ -6,8 +6,8 @@ const siteUrl = 'https://kartivizitim.com.tr'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Kartvizitim — Ücretsiz Dijital Kartvizit Oluşturucu',
-    template: '%s | Kartvizitim',
+    default: 'Kartivizitim — Ücretsiz Dijital Kartvizit Oluşturucu',
+    template: '%s | Kartivizitim',
   },
   description: 'Saniyeler içinde profesyonel dijital kartvizit oluştur. QR kod, link paylaşımı, telefon rehberine ekleme. Ücretsiz, hesapsız kullanılabilir, sınırsız kart.',
   keywords: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Hamza Yaman' }],
   creator: 'Hamza Yaman',
-  publisher: 'Kartvizitim',
+  publisher: 'Kartivizitim',
   formatDetection: {
     email: false,
     address: false,
@@ -44,19 +44,19 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'tr_TR',
     url: siteUrl,
-    siteName: 'Kartvizitim',
-    title: 'Kartvizitim — Ücretsiz Dijital Kartvizit Oluşturucu',
+    siteName: 'Kartivizitim',
+    title: 'Kartivizitim — Ücretsiz Dijital Kartvizit Oluşturucu',
     description: 'Saniyeler içinde profesyonel dijital kartvizit oluştur. QR kod, link, vCard. Ücretsiz, sınırsız.',
     images: [{
       url: '/og-image.png',
       width: 1200,
       height: 630,
-      alt: 'Kartvizitim - Dijital Kartvizit Oluşturucu',
+      alt: 'Kartivizitim - Dijital Kartvizit Oluşturucu',
     }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Kartvizitim — Ücretsiz Dijital Kartvizit',
+    title: 'Kartivizitim — Ücretsiz Dijital Kartvizit',
     description: 'Saniyeler içinde profesyonel dijital kartvizit oluştur.',
     images: ['/og-image.png'],
   },
@@ -89,7 +89,7 @@ export const viewport: Viewport = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'Kartvizitim',
+  name: 'Kartivizitim',
   description: 'Ücretsiz dijital kartvizit oluşturma platformu',
   url: siteUrl,
   applicationCategory: 'BusinessApplication',

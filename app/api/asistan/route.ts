@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 
-const SYSTEM_PROMPT = `Sen "Kartvizitim" platformunun yapay zeka asistanısın. Kullanıcıyla Türkçe, sıcak ve samimi konuş. Emoji kullanabilirsin ama abartma.
+const SYSTEM_PROMPT = `Sen "Kartivizitim" platformunun yapay zeka asistanısın. Kullanıcıyla Türkçe, sıcak ve samimi konuş. Emoji kullanabilirsin ama abartma.
 
 Amacın adım adım sorular sorarak kullanıcının dijital kartviziti için bilgi toplamak ve yaratıcı, kişiselleştirilmiş bir tasarım oluşturmak.
 
