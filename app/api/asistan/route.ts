@@ -55,12 +55,6 @@ export async function POST(req: NextRequest) {
   try {
     const clientKey = getClientKey(req)
 
-    // 30 dakikalık blok kontrolü (daha önce saldırı tespit edilmişse)
-    const blocked = await checkRateLimit(`asistan:blocked:${clientKey}`, 1, 30 * 60 * 1000)
-    if (!blocked.allowed) {
-      return NextResponse.json({ error: 'BLOCKED' }, { status: 429 })
-    }
-
     const body = await req.json()
     const { messages } = body
 
@@ -78,11 +72,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
     }
 
-    // Anomali tespiti: 2 dakikada 20'den fazla mesaj → saldırı
-    const anomaly = await checkRateLimit(`asistan:activity:${clientKey}`, 20, 2 * 60 * 1000)
+    // Anomali tespiti: 30 dakikada 25'ten fazla mesaj → saldırı
+    // 30dk penceresi hem tespit hem ceza görevi görür (pencere dolana kadar bloklu kalır)
+    const anomaly = await checkRateLimit(`asistan:activity:${clientKey}`, 25, 30 * 60 * 1000)
     if (!anomaly.allowed) {
-      // IP'yi 30 dakika blokla (blocked key'i doldur)
-      await checkRateLimit(`asistan:blocked:${clientKey}`, 0, 30 * 60 * 1000)
       return NextResponse.json({ error: 'BLOCKED' }, { status: 429 })
     }
 

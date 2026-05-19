@@ -37,6 +37,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false)
   const [updating, setUpdating] = useState<string | null>(null)
   const [filter, setFilter] = useState('all')
+  const [tab, setTab] = useState<'orders' | 'blocked'>('orders')
+  const [blockedIps, setBlockedIps] = useState<{ ip: string; count: number; reset_at: string }[]>([])
+  const [loadingBlocked, setLoadingBlocked] = useState(false)
 
   const handleLogin = async () => {
     setLoginError('')
@@ -73,6 +76,18 @@ export default function AdminPage() {
     setUpdating(null)
   }
 
+  const loadBlocked = async () => {
+    setLoadingBlocked(true)
+    const res = await fetch('/api/admin/blocked')
+    if (res.ok) { const d = await res.json(); setBlockedIps(d.blocked) }
+    setLoadingBlocked(false)
+  }
+
+  const unban = async (ip: string) => {
+    await fetch('/api/admin/blocked', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ip }) })
+    setBlockedIps(b => b.filter(x => x.ip !== ip))
+  }
+
   // Cookie varsa direkt giriş dene
   useEffect(() => {
     fetch('/api/admin/orders').then(r => { if (r.ok) { setAuthed(true); r.json().then(d => setOrders(d.orders)) } })
@@ -104,9 +119,16 @@ export default function AdminPage() {
     <div style={{ minHeight: '100vh', background: 'var(--surface)' }}>
       {/* Header */}
       <div style={{ background: '#fff', borderBottom: '1px solid var(--border)', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--ink)' }}>🛒 Sipariş Paneli</h1>
+        <div style={{ display: 'flex', gap: 0 }}>
+          <button onClick={() => setTab('orders')} style={{ fontSize: 14, fontWeight: tab === 'orders' ? 700 : 400, padding: '8px 18px', background: 'none', border: 'none', borderBottom: tab === 'orders' ? '2.5px solid #2563eb' : '2.5px solid transparent', color: tab === 'orders' ? '#2563eb' : 'var(--muted)', cursor: 'pointer', fontFamily: 'inherit' }}>
+            🛒 Siparişler
+          </button>
+          <button onClick={() => { setTab('blocked'); loadBlocked() }} style={{ fontSize: 14, fontWeight: tab === 'blocked' ? 700 : 400, padding: '8px 18px', background: 'none', border: 'none', borderBottom: tab === 'blocked' ? '2.5px solid #dc2626' : '2.5px solid transparent', color: tab === 'blocked' ? '#dc2626' : 'var(--muted)', cursor: 'pointer', fontFamily: 'inherit' }}>
+            🚫 Banlı IP'ler
+          </button>
+        </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={loadOrders} style={{ fontSize: 13, padding: '8px 14px', background: '#fff', border: '1px solid var(--border)', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}>
+          <button onClick={tab === 'orders' ? loadOrders : loadBlocked} style={{ fontSize: 13, padding: '8px 14px', background: '#fff', border: '1px solid var(--border)', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}>
             🔄 Yenile
           </button>
           <button onClick={handleLogout} style={{ fontSize: 13, padding: '8px 14px', background: '#fff', color: '#dc2626', border: '1.5px solid #fecaca', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
@@ -116,6 +138,40 @@ export default function AdminPage() {
       </div>
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
+
+        {/* Banlı IP'ler sekmesi */}
+        {tab === 'blocked' && (
+          <div>
+            <h2 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>
+              🚫 Banlı IP'ler <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--muted)' }}>(30 dakikada 25+ mesaj gönderenler)</span>
+            </h2>
+            {loadingBlocked ? <p style={{ color: 'var(--muted)', fontSize: 14 }}>Yükleniyor...</p> : blockedIps.length === 0 ? (
+              <div style={{ background: '#fff', borderRadius: 14, padding: 48, textAlign: 'center', border: '1px solid var(--border)' }}>
+                <p style={{ fontSize: 14, color: 'var(--muted)' }}>✅ Şu an banlı IP yok</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {blockedIps.map(b => (
+                  <div key={b.ip} style={{ background: '#fff', borderRadius: 12, border: '1px solid #fecaca', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                    <div>
+                      <span style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: '#dc2626' }}>{b.ip}</span>
+                      <span style={{ fontSize: 12, color: 'var(--muted)', marginLeft: 12 }}>{b.count} mesaj gönderdi</span>
+                      <span style={{ fontSize: 12, color: 'var(--muted)', marginLeft: 12 }}>
+                        Ban bitiş: {new Date(b.reset_at).toLocaleString('tr-TR')}
+                      </span>
+                    </div>
+                    <button onClick={() => unban(b.ip)}
+                      style={{ fontSize: 12, padding: '6px 14px', background: '#fff', color: '#16a34a', border: '1.5px solid #bbf7d0', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      ✓ Banı Kaldır
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === 'orders' && <>
         {/* Özet kartları */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 28 }}>
           {[['all', '📦 Toplam', orders.length], ['pending', '⏳ Bekleyen', counts.pending || 0], ['processing', '🔧 Hazırlanan', counts.processing || 0], ['shipped', '🚚 Kargoda', counts.shipped || 0], ['delivered', '✅ Teslim', counts.delivered || 0]].map(([key, label, count]) => (
@@ -180,6 +236,7 @@ export default function AdminPage() {
             })}
           </div>
         )}
+        </>}
       </div>
     </div>
   )
