@@ -6,27 +6,35 @@ import Footer from '@/components/Footer'
 const PACKAGES = [
   {
     id: 'single',
-    name: 'Tekli NFC Kart',
-    price: '₺149',
-    desc: 'Tek bir NFC kartvizit',
-    features: ['1 adet NFC kart', 'Özel baskı tasarımı', 'Kargo dahil', 'Ömür boyu güncellenebilir link'],
+    name: 'Standart NFC Kart',
+    price: '₺250',
+    desc: '1 adet standart NFC kartvizit',
+    features: ['1 adet NFC kart', 'Özel baskı tasarımı', 'Ömür boyu güncellenebilir link'],
     badge: '',
   },
   {
-    id: 'pack5',
-    name: '5\'li Paket',
-    price: '₺599',
-    desc: 'Ekip veya toplu kullanım',
-    features: ['5 adet NFC kart', 'Farklı kişiler için', 'Özel baskı tasarımı', 'Kargo dahil', 'Ömür boyu güncellenebilir'],
+    id: 'pack3',
+    name: 'Standart 3\'lü Paket',
+    price: '₺600',
+    desc: 'Aynı veya farklı kişiler için',
+    features: ['3 adet NFC kart', 'Kişi başı ₺200', 'Özel baskı tasarımı', 'Ömür boyu güncellenebilir'],
     badge: '🔥 Popüler',
   },
   {
-    id: 'corporate',
-    name: 'Kurumsal',
-    price: 'Teklif Al',
-    desc: '10+ kart, özel logo ve tasarım',
-    features: ['10+ adet NFC kart', 'Kurumsal logo baskısı', 'Öncelikli destek', 'Özel fiyatlandırma'],
-    badge: '🏢',
+    id: 'metal',
+    name: 'Metal NFC Kart',
+    price: '₺1.499',
+    desc: 'Premium metal kart, kalıcı izlenim',
+    features: ['1 adet metal NFC kart', 'Premium görünüm & his', 'Özel baskı tasarımı', 'Ömür boyu güncellenebilir'],
+    badge: '⭐ Premium',
+  },
+  {
+    id: 'ring',
+    name: 'NFC Yüzük',
+    price: '₺1.199',
+    desc: 'Parmağında taşı, dokunuşla paylaş',
+    features: ['1 adet NFC yüzük', 'Su geçirmez', 'Evrensel boyut', 'Ömür boyu güncellenebilir'],
+    badge: '💍 Yeni',
   },
 ]
 
@@ -38,7 +46,7 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 export default function SiparisPage() {
-  const [selected, setSelected] = useState('pack5')
+  const [selected, setSelected] = useState('pack3')
   const [form, setForm] = useState({ name: '', phone: '', email: '', address: '', card_url: '', notes: '' })
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)

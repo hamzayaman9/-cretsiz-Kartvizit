@@ -23,9 +23,10 @@ const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }
 }
 
 const PKG_LABELS: Record<string, string> = {
-  single: 'Tekli',
-  pack5: '5\'li Paket',
-  corporate: 'Kurumsal',
+  single: 'Standart Tekli',
+  pack3: 'Standart 3\'lü',
+  metal: 'Metal Kart',
+  ring: 'NFC Yüzük',
 }
 
 export default function AdminPage() {
