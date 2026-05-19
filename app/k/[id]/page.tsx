@@ -3,27 +3,63 @@ import { useEffect, useRef, useState } from 'react'
 import { CardData } from '@/lib/types'
 import CardPreview from '@/components/CardPreview'
 import QRStyled, { QRStyledHandle } from '@/components/QRStyled'
-import Footer from '@/components/Footer'
-import LogoText from '@/components/LogoText'
 import LogoIcon from '@/components/LogoIcon'
+import LogoText from '@/components/LogoText'
 import { downloadVCard } from '@/lib/downloads'
+
+// Hex rengini HSL'e çevirir
+function hexToHsl(hex: string): [number, number, number] {
+  const clean = hex.replace('#', '')
+  if (clean.length !== 6) return [220, 70, 50]
+  const r = parseInt(clean.slice(0, 2), 16) / 255
+  const g = parseInt(clean.slice(2, 4), 16) / 255
+  const b = parseInt(clean.slice(4, 6), 16) / 255
+  const max = Math.max(r, g, b), min = Math.min(r, g, b)
+  let h = 0, s = 0
+  const l = (max + min) / 2
+  if (max !== min) {
+    const d = max - min
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break
+      case g: h = ((b - r) / d + 2) / 6; break
+      case b: h = ((r - g) / d + 4) / 6; break
+    }
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)]
+}
+
+// Karttaki rengi alıp sayfa arka planı için koyu ton üretir
+function getPageBg(card: CardData): { bg: string; glow: string } {
+  const raw = card.cardStyle?.bgColor || card.accentColor || '#2563eb'
+  // Gradient varsa ilk hex rengi yakala
+  const hexMatch = raw.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/)
+  const hex = hexMatch ? hexMatch[0] : '#2563eb'
+  const [h, s] = hexToHsl(hex)
+  const bg = `hsl(${h}, ${Math.min(s, 25)}%, 7%)`
+  const glow = `hsla(${h}, ${Math.min(s + 20, 80)}%, 45%, 0.18)`
+  return { bg, glow }
+}
 
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null)
   const [error, setError] = useState(false)
-  const [copied, setCopied] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
-  const url = typeof window !== 'undefined' ? window.location.href : ''
   const [cardId, setCardId] = useState('')
+  const [showActions, setShowActions] = useState(false)
+  const [copied, setCopied] = useState(false)
   const qrRef = useRef<QRStyledHandle>(null)
+  const url = typeof window !== 'undefined' ? window.location.href : ''
 
   useEffect(() => {
     const segments = window.location.pathname.split('/')
     const id = segments[segments.length - 1]
     setCardId(id)
     if (!id) return
-    fetch(`/api/card?id=${id}`).then(r => r.json()).then(d => { if (d.error) setError(true); else setCard(d) }).catch(() => setError(true))
-    // Görüntülenme kaydet (fire & forget)
+    fetch(`/api/card?id=${id}`)
+      .then(r => r.json())
+      .then(d => { if (d.error) setError(true); else setCard(d) })
+      .catch(() => setError(true))
     fetch(`/api/card/view?id=${id}`, { method: 'POST' }).catch(() => {})
     fetch('/api/auth/me').then(r => r.json()).then(async me => {
       if (!me.user) return
@@ -44,94 +80,96 @@ export default function CardPage() {
     qrRef.current?.download(`${isim}-qr`)
   }
 
-  const handleVCardDownload = () => {
-    if (card) downloadVCard(card)
-  }
+  const handleVCard = () => { if (card) downloadVCard(card) }
 
   if (error) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface)' }}>
-      <div style={{ background: '#fff', borderRadius: 20, padding: '48px', textAlign: 'center', maxWidth: 400, border: '1px solid var(--border)' }}>
-        <div style={{ width: 64, height: 64, background: 'var(--brand-50)', borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, marginBottom: 16 }}>🔍</div>
-        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>Kartvizit bulunamadı</h2>
-        <p style={{ margin: '8px 0 20px', fontSize: 14, color: 'var(--muted)' }}>Bu link geçersiz veya süresi dolmuş olabilir.</p>
-        <a href="/" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-block', fontSize: 14 }}>Yeni kart oluştur →</a>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}>
+      <div style={{ background: '#1e293b', borderRadius: 20, padding: 48, textAlign: 'center', maxWidth: 360, border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ fontSize: 40, marginBottom: 16 }}>🔍</div>
+        <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#f1f5f9' }}>Kartvizit bulunamadı</h2>
+        <p style={{ margin: '8px 0 20px', fontSize: 13, color: '#94a3b8' }}>Bu link geçersiz veya süresi dolmuş olabilir.</p>
+        <a href="/" style={{ textDecoration: 'none', display: 'inline-block', fontSize: 13, background: '#2563eb', color: '#fff', padding: '10px 24px', borderRadius: 10, fontWeight: 600 }}>Yeni kart oluştur →</a>
       </div>
     </div>
   )
 
   if (!card) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface)' }}>
-      <p style={{ fontSize: 14, color: 'var(--muted)' }}>Yükleniyor...</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}>
+      <div style={{ width: 32, height: 32, border: '2px solid rgba(255,255,255,0.1)', borderTop: '2px solid #2563eb', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
 
+  const { bg, glow } = getPageBg(card)
+
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
-      <header className="mobile-header no-print" style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <LogoIcon size={36} />
-          <LogoText size={16} />
-        </a>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button onClick={() => window.history.back()} style={{ fontSize: 13, padding: '9px 14px', background: '#fff', border: '1px solid var(--border)', borderRadius: 10, cursor: 'pointer', color: 'var(--muted)', fontFamily: 'inherit' }}>
-            ← Geri
-          </button>
-          {isOwner && (
-            <a href={`/duzenle/${cardId}`} className="btn-primary" style={{ fontSize: 13, padding: '9px 18px', textDecoration: 'none', display: 'inline-block' }}>
-              ✏️ Düzenle
-            </a>
-          )}
+    <div style={{ minHeight: '100vh', background: bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 16px', position: 'relative', overflow: 'hidden' }}>
+
+      {/* Arka plan glow efekti */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%, -60%)',
+        width: 600, height: 600,
+        background: `radial-gradient(circle, ${glow} 0%, transparent 70%)`,
+        pointerEvents: 'none',
+      }} />
+
+      {/* Üst bar — sadece owner görür */}
+      {isOwner && (
+        <div style={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 8, zIndex: 10 }}>
+          <a href={`/duzenle/${cardId}`}
+            style={{ fontSize: 12, padding: '8px 16px', background: 'rgba(255,255,255,0.1)', color: '#e2e8f0', borderRadius: 10, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', fontWeight: 500 }}>
+            ✏️ Düzenle
+          </a>
         </div>
-      </header>
+      )}
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '32px 16px' }}>
-        <div style={{ width: '100%', maxWidth: 480 }} className="fade-up">
-          <div className="print-card"><CardPreview data={card} /></div>
+      {/* Kart */}
+      <div style={{ width: '100%', maxWidth: 480, position: 'relative', zIndex: 1 }}
+        className="fade-up">
 
-          {/* Aksiyon butonları */}
-          <div className="no-print" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
-            <button onClick={handleCopy} className="btn-primary" style={{ fontSize: 13, padding: '12px' }}>
-              {copied ? '✓ Kopyalandı' : '🔗 Linki kopyala'}
-            </button>
-            <button onClick={handleVCardDownload} className="btn-secondary" style={{ fontSize: 13, padding: '11px' }}>
-              📇 Rehbere ekle
-            </button>
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent('Kartivizitimi gör: ' + url)}`}
-              target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#25d366', color: '#fff', borderRadius: 12, fontSize: 13, padding: '12px', fontWeight: 600, textDecoration: 'none' }}
-            >
-              WhatsApp
-            </a>
-            <a
-              href={`sms:?body=${encodeURIComponent('Kartivizitimi gör: ' + url)}`}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', color: 'var(--brand-700)', border: '1.5px solid var(--brand-200)', borderRadius: 12, fontSize: 13, padding: '11px', fontWeight: 600, textDecoration: 'none' }}
-            >
-              SMS ile gönder
-            </a>
-          </div>
+        {/* Premium gölge */}
+        <div style={{
+          position: 'absolute', inset: -1,
+          borderRadius: 20,
+          background: 'transparent',
+          boxShadow: `0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)`,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }} />
 
-          {/* QR Kod - sadece tarama için, sade */}
-          <div className="no-print" style={{ marginTop: 14, background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 24px', textAlign: 'center' }}>
-            <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, color: 'var(--brand-600)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>QR Kod</p>
-            <div style={{ display: 'inline-block', background: '#fff', padding: 12, borderRadius: 12, border: '1px solid var(--border)' }}>
-              <QRStyled ref={qrRef} value={url} size={160} dotType="square" />
-            </div>
-            <p style={{ margin: '10px 0 12px', fontSize: 12, color: 'var(--muted)' }}>Telefonla okutarak kartvizite ulaş</p>
-            <button onClick={handleQRDownload} className="btn-secondary" style={{ fontSize: 13, padding: '9px 20px' }}>
-              QR İndir (PNG)
-            </button>
-          </div>
-
-          <div className="no-print" style={{ marginTop: 24, textAlign: 'center' }}>
-            <a href="/" style={{ fontSize: 13, color: 'var(--brand-700)', textDecoration: 'none', fontWeight: 500 }}>
-              Sen de ücretsiz kartvizit oluştur →
-            </a>
-          </div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <CardPreview data={card} />
         </div>
       </div>
 
-      <Footer />
+      {/* Aksiyon butonu - karta tıklayınca açılır */}
+      <div style={{ marginTop: 20, display: 'flex', gap: 10, zIndex: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <button onClick={handleVCard}
+          style={{ fontSize: 12, padding: '9px 18px', background: 'rgba(255,255,255,0.1)', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 20, cursor: 'pointer', fontFamily: 'inherit', backdropFilter: 'blur(8px)', fontWeight: 500 }}>
+          📇 Rehbere Ekle
+        </button>
+        <button onClick={handleCopy}
+          style={{ fontSize: 12, padding: '9px 18px', background: copied ? 'rgba(22,163,74,0.3)' : 'rgba(255,255,255,0.1)', color: copied ? '#86efac' : '#e2e8f0', border: `1px solid ${copied ? 'rgba(22,163,74,0.4)' : 'rgba(255,255,255,0.12)'}`, borderRadius: 20, cursor: 'pointer', fontFamily: 'inherit', backdropFilter: 'blur(8px)', fontWeight: 500, transition: 'all 0.2s' }}>
+          {copied ? '✓ Kopyalandı' : '🔗 Linki Kopyala'}
+        </button>
+        <a href={`https://wa.me/?text=${encodeURIComponent('Kartivizitimi gör: ' + url)}`}
+          target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: 12, padding: '9px 18px', background: 'rgba(37,211,102,0.15)', color: '#86efac', border: '1px solid rgba(37,211,102,0.25)', borderRadius: 20, textDecoration: 'none', backdropFilter: 'blur(8px)', fontWeight: 500 }}>
+          WhatsApp
+        </a>
+      </div>
+
+      {/* Branding */}
+      <div style={{ position: 'absolute', bottom: 20, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: 0.35, zIndex: 1 }}>
+        <LogoIcon size={18} />
+        <span style={{ fontSize: 11, color: '#e2e8f0', fontWeight: 500, letterSpacing: '0.02em' }}>kartivizitim.com.tr</span>
+      </div>
+
+      {/* Gizli QR ref (indirme için) */}
+      <div style={{ position: 'absolute', left: -9999 }}>
+        <QRStyled ref={qrRef} value={url} size={300} dotType="square" />
+      </div>
     </div>
   )
 }
