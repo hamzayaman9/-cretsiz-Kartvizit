@@ -103,15 +103,16 @@ export default function CardPage() {
   const { bg, glow } = getPageBg(card)
 
   return (
-    <div style={{ minHeight: '100vh', background: bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 16px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: bg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 16px' }}>
 
       {/* Arka plan glow efekti */}
       <div style={{
-        position: 'absolute', top: '50%', left: '50%',
+        position: 'fixed', top: '50%', left: '50%',
         transform: 'translate(-50%, -60%)',
-        width: 600, height: 600,
+        width: 700, height: 700,
         background: `radial-gradient(circle, ${glow} 0%, transparent 70%)`,
         pointerEvents: 'none',
+        zIndex: 0,
       }} />
 
       {/* Üst bar — sadece owner görür */}
@@ -125,22 +126,9 @@ export default function CardPage() {
       )}
 
       {/* Kart */}
-      <div style={{ width: '100%', maxWidth: 480, position: 'relative', zIndex: 1 }}
+      <div style={{ width: '100%', maxWidth: 480, position: 'relative', zIndex: 1, overflow: 'hidden', borderRadius: 16, boxShadow: '0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)' }}
         className="fade-up">
-
-        {/* Premium gölge */}
-        <div style={{
-          position: 'absolute', inset: -1,
-          borderRadius: 20,
-          background: 'transparent',
-          boxShadow: `0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)`,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <CardPreview data={card} />
-        </div>
+        <CardPreview data={card} />
       </div>
 
       {/* Aksiyon butonu - karta tıklayınca açılır */}
