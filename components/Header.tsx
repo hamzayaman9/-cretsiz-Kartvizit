@@ -54,6 +54,16 @@ export default function Header({ onAuthClick }: Props) {
       </a>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <a href="/siparis" className="desktop-only" style={{
+          fontSize: 13, fontWeight: 600,
+          color: '#b45309',
+          textDecoration: 'none', padding: '9px 14px',
+          border: '1.5px solid #fde68a', borderRadius: 10,
+          background: '#fffbeb', whiteSpace: 'nowrap',
+          display: 'flex', alignItems: 'center', gap: 6,
+        }}>
+          💳 NFC Kart Sipariş Et
+        </a>
         <a href="/asistan" className="desktop-only" style={{
           fontSize: 13, fontWeight: 600,
           color: '#7c3aed',

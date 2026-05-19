@@ -136,6 +136,33 @@ export default function HomePage() {
       <Hero onStart={scrollToBuilder} />
       <Features />
 
+      {/* NFC Kart Banner */}
+      <div style={{ background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', padding: '40px 32px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ fontSize: 48, lineHeight: 1 }}>💳</div>
+            <div>
+              <p style={{ margin: '0 0 4px', fontSize: 12, fontWeight: 700, color: '#fbbf24', letterSpacing: '0.1em' }}>YENİ</p>
+              <h2 style={{ margin: '0 0 6px', fontSize: 22, fontWeight: 700, color: '#fff', fontFamily: 'var(--font-display)' }}>
+                Fiziksel NFC Kart İstiyorsan Basıyoruz
+              </h2>
+              <p style={{ margin: 0, fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+                Telefona yaklaştır, kartvizitini paylaş. Standart, metal veya yüzük — sen seç.
+              </p>
+            </div>
+          </div>
+          <a href="/siparis" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: '#fbbf24', color: '#1c1917',
+            fontWeight: 700, fontSize: 14, padding: '14px 28px',
+            borderRadius: 12, textDecoration: 'none', whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}>
+            Sipariş Ver →
+          </a>
+        </div>
+      </div>
+
       <section ref={builderRef} className="mobile-section" style={{ background: 'var(--surface)', padding: '80px 0 60px' }}>
         <div className="mobile-padding" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
