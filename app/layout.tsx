@@ -74,8 +74,7 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   verification: {
-    // Google Search Console'dan alacağın kod buraya gelecek
-    // google: 'verification-code-here',
+    google: '_K55uUo6U2SC1vIQgAsGHI6fc-LDzAuTMitRbyui1DU',
   },
 }
 
