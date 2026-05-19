@@ -55,14 +55,14 @@ export async function POST(req: NextRequest) {
   try {
     const clientKey = getClientKey(req)
 
-    // Dakika bazlı sıkı limit (burst koruması)
-    const burstLimit = await checkRateLimit(`asistan:burst:${clientKey}`, 5, 60 * 1000)
+    // Dakika bazlı limit (burst koruması)
+    const burstLimit = await checkRateLimit(`asistan:burst:${clientKey}`, 12, 60 * 1000)
     if (!burstLimit.allowed) {
       return NextResponse.json({ error: 'Çok hızlı istek gönderiyorsun, biraz bekle' }, { status: 429 })
     }
 
     // Saatlik limit
-    const hourLimit = await checkRateLimit(`asistan:hour:${clientKey}`, 20, 60 * 60 * 1000)
+    const hourLimit = await checkRateLimit(`asistan:hour:${clientKey}`, 40, 60 * 60 * 1000)
     if (!hourLimit.allowed) {
       return NextResponse.json({ error: 'Saatlik istek limitine ulaştın, 1 saat sonra dene' }, { status: 429 })
     }
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...messages.slice(-20),
