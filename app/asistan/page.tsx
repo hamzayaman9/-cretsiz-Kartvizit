@@ -20,6 +20,7 @@ export default function AsistanPage() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [creating, setCreating] = useState(false)
+  const [blocked, setBlocked] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -49,6 +50,11 @@ export default function AsistanPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: msgs }),
       })
+      if (res.status === 429) {
+        const data = await res.json()
+        if (data.error === 'BLOCKED') setBlocked(true)
+        return null
+      }
       if (!res.ok) return null
       return await res.json()
     } catch {
@@ -96,6 +102,28 @@ export default function AsistanPage() {
       setCreating(false)
     }
   }
+
+  if (blocked) return (
+    <div style={{ minHeight: '100vh', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ background: '#1e293b', borderRadius: 20, padding: '48px 40px', textAlign: 'center', maxWidth: 420, border: '1px solid rgba(239,68,68,0.3)' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🚨</div>
+        <h2 style={{ margin: '0 0 12px', fontSize: 20, fontWeight: 700, color: '#f87171' }}>Şüpheli Aktivite Tespit Edildi</h2>
+        <p style={{ margin: '0 0 8px', fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
+          Yoğun mesaj gönderimi <strong style={{ color: '#fca5a5' }}>otomatik saldırı</strong> olarak algılandı.
+        </p>
+        <p style={{ margin: '0 0 28px', fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>
+          IP adresiniz <strong style={{ color: '#94a3b8' }}>30 dakika</strong> süreyle erişime kapatılmıştır.
+          Normal kullanıcıysanız 30 dakika sonra tekrar deneyebilirsiniz.
+        </p>
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '10px 16px', fontSize: 12, color: '#f87171', marginBottom: 24 }}>
+          Bu işlem güvenlik sistemimiz tarafından otomatik olarak kaydedilmiştir.
+        </div>
+        <a href="/" style={{ display: 'inline-block', fontSize: 13, color: '#64748b', textDecoration: 'none' }}>
+          ← Ana sayfaya dön
+        </a>
+      </div>
+    </div>
+  )
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>

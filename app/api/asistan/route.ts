@@ -55,16 +55,10 @@ export async function POST(req: NextRequest) {
   try {
     const clientKey = getClientKey(req)
 
-    // Dakika bazlı limit (burst koruması)
-    const burstLimit = await checkRateLimit(`asistan:burst:${clientKey}`, 12, 60 * 1000)
-    if (!burstLimit.allowed) {
-      return NextResponse.json({ error: 'Çok hızlı istek gönderiyorsun, biraz bekle' }, { status: 429 })
-    }
-
-    // Saatlik limit
-    const hourLimit = await checkRateLimit(`asistan:hour:${clientKey}`, 40, 60 * 60 * 1000)
-    if (!hourLimit.allowed) {
-      return NextResponse.json({ error: 'Saatlik istek limitine ulaştın, 1 saat sonra dene' }, { status: 429 })
+    // 30 dakikalık blok kontrolü (daha önce saldırı tespit edilmişse)
+    const blocked = await checkRateLimit(`asistan:blocked:${clientKey}`, 1, 30 * 60 * 1000)
+    if (!blocked.allowed) {
+      return NextResponse.json({ error: 'BLOCKED' }, { status: 429 })
     }
 
     const body = await req.json()
@@ -82,6 +76,14 @@ export async function POST(req: NextRequest) {
     const totalChars = messages.reduce((sum: number, m: any) => sum + String(m?.content || '').length, 0)
     if (totalChars > 20000) {
       return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
+    }
+
+    // Anomali tespiti: 2 dakikada 20'den fazla mesaj → saldırı
+    const anomaly = await checkRateLimit(`asistan:activity:${clientKey}`, 20, 2 * 60 * 1000)
+    if (!anomaly.allowed) {
+      // IP'yi 30 dakika blokla (blocked key'i doldur)
+      await checkRateLimit(`asistan:blocked:${clientKey}`, 0, 30 * 60 * 1000)
+      return NextResponse.json({ error: 'BLOCKED' }, { status: 429 })
     }
 
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
