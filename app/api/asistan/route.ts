@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 })
     }
 
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // llama-3.3-70b dene, rate limit yerse 8b'ye düş
+    let res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
@@ -106,10 +107,33 @@ export async function POST(req: NextRequest) {
       }),
     })
 
+    // Rate limit veya hata → daha hızlı modele fallback
     if (!res.ok) {
-      const err = await res.text()
-      console.error('Groq error:', err)
-      return NextResponse.json({ error: 'AI servisi şu an meşgul' }, { status: 502 })
+      const errText = await res.text()
+      console.error('Groq 70b error:', errText)
+
+      res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...messages.slice(-20),
+          ],
+          temperature: 0.95,
+          max_tokens: 1024,
+        }),
+      })
+
+      if (!res.ok) {
+        const err2 = await res.text()
+        console.error('Groq 8b error:', err2)
+        return NextResponse.json({ error: 'AI servisi şu an meşgul' }, { status: 502 })
+      }
     }
 
     const json = await res.json()
